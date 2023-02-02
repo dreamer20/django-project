@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Main
+{% endblock title %}
+
+{% block content %}
+<div class="container">
+    {% include "navbar.html" %}
+    {% if messages %}
+    {% for message in messages %}
+        {% if message.level_tag == 'success' %}
+            <div class="row justify-content-center mt-5">
+                <div class="col-md-7 col-lg-5 col-xl-4">
+                    <div class="alert alert-success" role="alert">
+                        {{ message }}
+                    </div>
+                </div>
+            </div>                
+        {% endif %}
+    {% endfor %}
+{% endif %}
+</div>
+
+{% endblock content %}
