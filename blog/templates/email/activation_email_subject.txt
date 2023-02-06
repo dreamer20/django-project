@@ -1,0 +1,1 @@
+[Django blog] account confirmation

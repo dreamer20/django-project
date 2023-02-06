@@ -18,61 +18,36 @@ class RegistrationFormTest(TestCase):
 
     def test_password_form_field_label(self):
         form = RegisterForm()
-        self.assertTrue(form.fields['password'].label is None
-                        or form.fields['password'].label == 'password')
+        self.assertTrue(form.fields['password1'].label is None
+                        or form.fields['password1'].label == 'Password')
 
-    def test_password_min_length(self):
+    def test_password1_min_length(self):
         form = RegisterForm()
-        self.assertEqual(form.fields['password'].min_length, 8)
+        self.assertEqual(form.fields['password1'].min_length, 8)
 
-    def test_password_max_length(self):
+    def test_password1_max_length(self):
         form = RegisterForm()
-        self.assertEqual(form.fields['password'].max_length, 100)
+        self.assertEqual(form.fields['password1'].max_length, 100)
 
-    def test_repeat_password_form_field_label(self):
+    def test_password2_form_field_label(self):
         form = RegisterForm()
-        self.assertTrue(form.fields['repeat_password'].label is None
-                        or form.fields['repeat_password'].label == 'repeat_password')
+        self.assertTrue(form.fields['password2'].label is None
+                        or form.fields['password2'].label == 'Repeat password')
 
-    def test_repeat_password_min_length(self):
+    def test_password2_min_length(self):
         form = RegisterForm()
-        self.assertEqual(form.fields['repeat_password'].min_length, 8)
+        self.assertEqual(form.fields['password2'].min_length, 8)
 
-    def test_repeat_password_max_length(self):
+    def test_password2_max_length(self):
         form = RegisterForm()
-        self.assertEqual(form.fields['password'].max_length, 100)
-
-    def test_password_math(self):
-        """
-        Validation return False if password and repeat_password fields isn't equal
-        and has error string.
-        """
-        data = {
-            'password': 'qwerty1234',
-            'repeat_password': '1234qwerty'
-        }
-        form = RegisterForm(data=data)
-        self.assertFalse(form.is_valid())
-        self.assertIn('Passwords doesn\'t match.', form.errors['password'])
-
-    def test_password_validity(self):
-        """
-        Validation return False if password don't have at least one latin letter.
-        """
-        data = {
-            'password': '12345678',
-            'repeat_password': '12345678'
-        }
-        form = RegisterForm(data=data)
-        self.assertFalse(form.is_valid())
-        self.assertIn('Password must contain at least one latin letter.', form.errors['password'])
+        self.assertEqual(form.fields['password2'].max_length, 100)
 
 
 class LoginFormTest(TestCase):
     def test_username_form_field_label(self):
         form = LoginForm()
         self.assertTrue(form.fields['username'].label is None
-                        or form.fields['username'].label == 'username')
+                        or form.fields['username'].label == 'Username')
 
     def test_password_form_field_label(self):
         form = LoginForm()

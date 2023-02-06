@@ -125,3 +125,13 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# STMP server settings
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_PORT = 465
+EMAIL_HOST_PASSWORD = 'lgevamdvvmwyeylv'
+EMAIL_HOST_USER = 'dreamer20gv'
+EMAIL_USE_SSL = True
+ACCOUNT_ACTIVATION_DAYS = 1
+DEFAULT_FROM_EMAIL = 'dreamer20gv@yandex.ru'

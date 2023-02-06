@@ -1,9 +1,10 @@
 from django import forms
-from django.forms import ValidationError
-from string import ascii_letters
+from django.contrib.auth import password_validation
+from django.contrib.auth import forms as authForms
+from django_registration.forms import RegistrationForm
 
 
-class RegisterForm(forms.Form):
+class RegisterForm(RegistrationForm):
     common_attrs = {'class': 'form-control'}
 
     username = forms.CharField(
@@ -11,37 +12,24 @@ class RegisterForm(forms.Form):
         min_length=3,
         widget=forms.TextInput(attrs=common_attrs)
     )
-    password = forms.CharField(
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs=common_attrs)
+    )
+    password1 = forms.CharField(
+        label='Password',
         max_length=100,
         min_length=8,
         widget=forms.PasswordInput(attrs=common_attrs)
     )
-    repeat_password = forms.CharField(
+    password2 = forms.CharField(
+        label='Repeat password',
         min_length=8,
         max_length=100,
         widget=forms.PasswordInput(attrs=common_attrs)
     )
 
-    def clean_password(self):
-        password = self.cleaned_data['password']
 
-        if any([(x in password) for x in ascii_letters]) is False:
-            self.add_error('password', ValidationError('Password must contain at least one latin letter.', code='invalid'))
-            # raise ValidationError('Password must contain at least one latin letter.', code='invalid')
-
-        return password
-
-    def clean(self):
-        cleaned_data = super().clean()
-        password = cleaned_data.get('password')
-        repeat_password = cleaned_data.get('repeat_password')
-        # print(password, repeat_password)
-
-        if password != repeat_password:
-            self.add_error('password', ValidationError('Passwords doesn\'t match.', code='invalid'))
-
-
-class LoginForm(forms.Form):
+class LoginForm(authForms.AuthenticationForm):
     common_attrs = {'class': 'form-control'}
 
     username = forms.CharField(
@@ -49,4 +37,28 @@ class LoginForm(forms.Form):
     )
     password = forms.CharField(
         widget=forms.PasswordInput(attrs=common_attrs)
+    )
+
+
+class PasswordResetForm(authForms.PasswordResetForm):
+    common_attrs = {'class': 'form-control'}
+
+    email = forms.EmailField(
+        widget=forms.EmailInput(attrs=common_attrs)
+    )
+
+
+class SetPasswordForm(authForms.SetPasswordForm):
+    common_attrs = {'class': 'form-control', "autocomplete": "new-password"}
+
+    new_password1 = forms.CharField(
+        label="New password",
+        widget=forms.PasswordInput(common_attrs),
+        strip=False,
+        help_text=password_validation.password_validators_help_text_html(),
+    )
+    new_password2 = forms.CharField(
+        label="New password confirmation",
+        strip=False,
+        widget=forms.PasswordInput(common_attrs),
     )

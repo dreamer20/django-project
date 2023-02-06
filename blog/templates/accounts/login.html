@@ -6,22 +6,9 @@
 
 {% block content %}
     <div class="container">
-        {% if messages %}
-            {% for message in messages %}
-                {% if message.level_tag == 'success' %}
-                    <div class="row justify-content-center mt-5">
-                        <div class="col-md-7 col-lg-5 col-xl-4">
-                            <div class="alert alert-success" role="alert">
-                                {{ message }}
-                            </div>
-                        </div>
-                    </div>                
-                {% endif %}
-            {% endfor %}
-        {% endif %}
         <div class="row justify-content-center mt-5">
             <div class="col-md-7 col-lg-5 col-xl-4">
-                <div class="card">
+                <div class="card shadow-sm">
                     <div class="card-header text-bg-primary">
                         Authorization
                     </div>
@@ -37,15 +24,10 @@
                                     {% endfor %}
                                 </div>
                                 {% endfor %}
-                            {% if messages %}
-                                {% for message in messages %}
-                                    {% if message.level_tag == 'error' %}
-                                        <div class="alert alert-danger p-1" role="alert">
-                                            {{ message }}
-                                        </div>                                                                
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}
+                            {% for error in form.non_field_errors %}
+                            <p class="text-danger">{{ error }}</p>
+                            {% endfor %}
+                            <p><a href="{% url 'password_reset' %}">Forgot password?</a></p>
                             <button class="btn btn-primary float-end" type="submit">Log In</button>
                         </form>
                     </div>

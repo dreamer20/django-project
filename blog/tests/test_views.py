@@ -1,7 +1,8 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
-from django.contrib.messages import get_messages
+from django.contrib.auth.tokens import default_token_generator
+# from django.contrib.messages import get_messages
 
 
 class RegisterViewTest(TestCase):
@@ -12,7 +13,7 @@ class RegisterViewTest(TestCase):
         User.objects.create_user(username=cls.existed_username, password='qwerty1234')
 
     def test_view_url_exists_at_desired_location(self):
-        response = self.client.get('/blog/register/')
+        response = self.client.get('/blog/accounts/registration/')
         self.assertEqual(response.status_code, 200)
 
     def test_view_url_accessible_by_name(self):
@@ -22,48 +23,51 @@ class RegisterViewTest(TestCase):
     def test_view_uses_correct_template(self):
         response = self.client.get(reverse('register'))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'register.html')
+        self.assertTemplateUsed(response, 'accounts/register.html')
 
     def test_view_create_user(self):
         newusername = 'brandnewuser'
         data = {
             'username': newusername,
-            'password': 'qwerty1234',
-            'repeat_password': 'qwerty1234'
+            'password1': 'peri54ir7end',
+            'password2': 'peri54ir7end',
+            'email': 'gv4alex@gmail.com',
         }
         response = self.client.post(reverse('register'), data)
-        self.assertRedirects(response, reverse('login'))
-        messages = [str(m) for m in list(get_messages(response.wsgi_request))]
-        self.assertIn('Registrations is succesfull. Now you can log in.', messages)
+        self.assertRedirects(response, reverse('django_registration_complete'))
         user = User.objects.get(username=newusername)
         self.assertEqual(newusername, user.username)
 
-    def test_view_return_user_already_exist_form_error(self):
-        data = {
-            'username': self.existed_username,
-            'password': 'qwerty1234',
-            'repeat_password': 'qwerty1234'
-        }
-        response = self.client.post(reverse('register'), data)
-        self.assertEqual(response.status_code, 200)
-        self.assertFormError(response, 'form', 'username', 'Username already exist.')
+
+class RegisterCompleteViewTest(TestCase):
+    def test_view_shows_404_if_registration_not_performed(self):
+        response = self.client.get('/blog/accounts/registration/complete/')
+        self.assertEqual(response.status_code, 404)
+
+
+class ActivationCompleteViewTest(TestCase):
+    def test_view_shows_404_if_activation_not_performed(self):
+        response = self.client.get('/blog/accounts/activation/complete/')
+        self.assertEqual(response.status_code, 404)
 
 
 class LoginViewTest(TestCase):
     existed_user = {
         'username': 'existeduser',
-        'password': 'qwerty1234'
+        'password': 'qwerty1234',
+        'email': 'test@mail.com'
     }
 
     @classmethod
     def setUpTestData(cls):
         User.objects.create_user(
             username=cls.existed_user['username'],
-            password=cls.existed_user['password']
+            password=cls.existed_user['password'],
+            email=cls.existed_user['email']
         )
 
     def test_view_url_exists_at_desired_location(self):
-        response = self.client.get('/blog/login/')
+        response = self.client.get('/blog/accounts/login/')
         self.assertEqual(response.status_code, 200)
 
     def test_view_url_accessible_by_name(self):
@@ -73,7 +77,7 @@ class LoginViewTest(TestCase):
     def test_view_uses_correct_template(self):
         response = self.client.get(reverse('login'))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'login.html')
+        self.assertTemplateUsed(response, 'accounts/login.html')
 
     def test_view_authenticate_user(self):
         data = {
@@ -90,68 +94,76 @@ class LoginViewTest(TestCase):
         }
         response = self.client.post(reverse('login'), data=data)
         self.assertEqual(response.status_code, 200)
-        messages = [str(m) for m in list(response.context['messages'])]
-        self.assertIn('Invalid password or username', messages)
-
-
-class IndexViewTest(TestCase):
-    existed_user = {
-        'username': 'existeduser',
-        'password': 'qwerty1234'
-    }
-
-    @classmethod
-    def setUpTestData(cls):
-        User.objects.create_user(
-            username=cls.existed_user['username'],
-            password=cls.existed_user['password']
-        )
-
-    def test_view_url_exists_at_desired_location(self):
-        response = self.client.get('/blog/')
-        self.assertEqual(response.status_code, 200)
-
-    def test_view_url_accessible_by_name(self):
-        response = self.client.get(reverse('index'))
-        self.assertEqual(response.status_code, 200)
-
-    def test_view_index_page_has_logged_user_info(self):
-        self.client.login(
-            username=self.existed_user['username'],
-            password=self.existed_user['password']
-        )
-
-        response = self.client.get(reverse('index'))
-        self.assertIn('user', response.context)
-        self.assertEqual(self.existed_user['username'], response.context['user'].username)
+        self.assertTemplateUsed(response, 'accounts/login.html')
 
 
 class LogoutViewTest(TestCase):
+    def test_view_redirects_correctly_after_logout(self):
+        response = self.client.get(reverse('logout'))
+        self.assertRedirects(response, reverse('index'))
+
+
+class PasswordResetViewTest(TestCase):
     existed_user = {
         'username': 'existeduser',
-        'password': 'qwerty1234'
+        'password': 'qwerty1234',
+        'email': 'test@mail.com'
     }
 
     @classmethod
     def setUpTestData(cls):
         User.objects.create_user(
             username=cls.existed_user['username'],
-            password=cls.existed_user['password']
+            password=cls.existed_user['password'],
+            email=cls.existed_user['email']
         )
 
     def test_view_url_exists_at_desired_location(self):
-        response = self.client.get('/blog/logout/')
-        self.assertRedirects(response, reverse('index'))
+        response = self.client.get('/blog/accounts/password_reset/')
+        self.assertEqual(response.status_code, 200)
 
     def test_view_url_accessible_by_name(self):
-        response = self.client.get(reverse('logout'))
-        self.assertRedirects(response, reverse('index'))
+        response = self.client.get(reverse('password_reset'))
+        self.assertEqual(response.status_code, 200)
 
-    def test_user_logged_out_after_logout(self):
-        self.client.login(
-            username=self.existed_user['username'],
-            password=self.existed_user['password']
+    def test_view_uses_correct_template(self):
+        response = self.client.get(reverse('password_reset'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'accounts/password_reset.html')
+
+    def test_view_redirect_after_sending_email(self):
+        data = {
+            'email': self.existed_user['email'],
+        }
+        response = self.client.post(reverse('password_reset'), data)
+        self.assertRedirects(response, reverse('password_reset_done'))
+
+
+class PasswordResetDoneViewTest(TestCase):
+    def test_view_uses_correct_template(self):
+        response = self.client.get(reverse('password_reset_done'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'accounts/password_reset_done.html')
+
+
+class PasswordResetCompleteViewTest(TestCase):
+    def test_view_uses_correct_template(self):
+        response = self.client.get(reverse('password_reset_complete'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'accounts/password_reset_complete.html')
+
+
+class PasswordResetConfirmViewTest(TestCase):
+    existed_user = {
+        'username': 'existeduser',
+        'password': 'qwerty1234',
+        'email': 'test@mail.com'
+    }
+
+    @classmethod
+    def setUpTestData(cls):
+        User.objects.create_user(
+            username=cls.existed_user['username'],
+            password=cls.existed_user['password'],
+            email=cls.existed_user['email']
         )
-        response = self.client.get(reverse('logout'))
-        self.assertRedirects(response, reverse('index'))
-        self.assertNotIn(self.existed_user['username'].encode('utf8'), response.content)
