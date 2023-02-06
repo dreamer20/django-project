@@ -68,7 +68,7 @@ class RegisterView(reg_views.RegistrationView):
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             return redirect(reverse('index'))
-        return render(request, self.template_name)
+        return super().get(request, *args, **kwargs)
 
 
 class RegisterCompleteView(TemplateView):
@@ -124,7 +124,7 @@ class LoginView(views.LoginView):
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             return redirect(reverse('index'))
-        return render(request, self.template_name)
+        return super().get(request, *args, **kwargs)
 
 
 class PasswordResetView(views.PasswordResetView):
