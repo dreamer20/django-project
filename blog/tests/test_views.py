@@ -1,16 +1,22 @@
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
-from django.contrib.auth.tokens import default_token_generator
-# from django.contrib.messages import get_messages
 
 
 class RegisterViewTest(TestCase):
-    existed_username = 'existeduser'
+    existed_user = {
+        'username': 'existeduser',
+        'password': 'qwerty1234',
+        'email': 'test@mail.com'
+    }
 
     @classmethod
     def setUpTestData(cls):
-        User.objects.create_user(username=cls.existed_username, password='qwerty1234')
+        User.objects.create_user(
+            username=cls.existed_user['username'],
+            password=cls.existed_user['password'],
+            email=cls.existed_user['email']
+        )
 
     def test_view_url_exists_at_desired_location(self):
         response = self.client.get('/blog/accounts/registration/')
@@ -37,6 +43,14 @@ class RegisterViewTest(TestCase):
         self.assertRedirects(response, reverse('django_registration_complete'))
         user = User.objects.get(username=newusername)
         self.assertEqual(newusername, user.username)
+
+    def test_view_redirects_to_index_page_if_authorized(self):
+        self.client.login(
+            username=self.existed_user['username'],
+            password=self.existed_user['password']
+        )
+        response = self.client.get(reverse('register'))
+        self.assertRedirects(response, reverse('index'))
 
 
 class RegisterCompleteViewTest(TestCase):
@@ -95,6 +109,14 @@ class LoginViewTest(TestCase):
         response = self.client.post(reverse('login'), data=data)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'accounts/login.html')
+
+    def test_view_redirects_to_index_page_if_authorized(self):
+        self.client.login(
+            username=self.existed_user['username'],
+            password=self.existed_user['password']
+        )
+        response = self.client.get(reverse('login'))
+        self.assertRedirects(response, reverse('index'))
 
 
 class LogoutViewTest(TestCase):

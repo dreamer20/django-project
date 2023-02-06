@@ -69,6 +69,11 @@ class RegisterView(reg_views.RegistrationView):
             html_message=html_content
         )
 
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect(reverse('index'))
+        return render(request, self.template_name)
+
 
 class RegisterCompleteView(TemplateView):
     template_name = 'accounts/registration_complete.html'
@@ -119,6 +124,11 @@ class LoginView(views.LoginView):
     form_class = LoginForm
     template_name = 'accounts/login.html'
     next_page = '/blog/'
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return redirect(reverse('index'))
+        return render(request, self.template_name)
 
 
 class PasswordResetView(views.PasswordResetView):
