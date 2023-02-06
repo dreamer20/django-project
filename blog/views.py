@@ -1,8 +1,6 @@
 from django.conf import settings
 from django.shortcuts import render, redirect
 from django.http import Http404
-from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth import views
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
@@ -10,11 +8,9 @@ from django.utils.encoding import force_str
 from django_registration.backends.activation import views as reg_views
 from django_registration.exceptions import ActivationError
 from django_registration import signals
-from django.contrib import messages
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from django.views.generic.base import TemplateView
-from django.forms import ValidationError
 from .forms import RegisterForm, LoginForm, PasswordResetForm, SetPasswordForm
 # Create your views here.
 
