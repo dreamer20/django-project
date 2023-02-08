@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
 from django.http import Http404
 from django.contrib.auth import views
@@ -9,9 +10,11 @@ from django_registration.backends.activation import views as reg_views
 from django_registration.exceptions import ActivationError
 from django_registration import signals
 from django.urls import reverse
+from django.contrib.auth import update_session_auth_hash
 from django.http import HttpResponseRedirect
 from django.views.generic.base import TemplateView
-from .forms import RegisterForm, LoginForm, PasswordResetForm, SetPasswordForm
+from .forms import RegisterForm, LoginForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm, EmailForm
+from django.contrib import messages
 # Create your views here.
 
 
@@ -148,3 +151,39 @@ class PasswordResetComplete(views.PasswordResetCompleteView):
 
 class LogoutView(views.LogoutView):
     next_page = '/blog/'
+
+
+class ProfileView(LoginRequiredMixin, TemplateView):
+    template_name = 'accounts/profile.html'
+    form_class = PasswordChangeForm
+
+
+class PasswordChangeView(LoginRequiredMixin, views.PasswordChangeView):
+    template_name = 'accounts/password_change.html'
+    success_url = '/blog/accounts/password_change/'
+    form_class = PasswordChangeForm
+
+    def form_valid(self, form):
+        form.save()
+        # Updating the password logs out all other sessions for the user
+        # except the current one.
+        update_session_auth_hash(self.request, form.user)
+        messages.info(self.request, 'Your password was successfully changed.')
+        return super().form_valid(form)
+
+
+class EmailChangeView(LoginRequiredMixin, TemplateView):
+    template_name = 'accounts/email_change.html'
+    form_class = EmailForm
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class(initial={'new_email': request.user.email})
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            request.user.email = form.cleaned_data['new_email']
+            request.user.save()
+            messages.info(self.request, 'Your email was successfully changed.')
+        return render(request, self.template_name, {'form': form})

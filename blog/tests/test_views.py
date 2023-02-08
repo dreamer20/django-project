@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.auth.models import User
-
+from blog.models import User
+from django.contrib.messages import get_messages
 
 class RegisterViewTest(TestCase):
     existed_user = {
@@ -189,3 +189,131 @@ class PasswordResetConfirmViewTest(TestCase):
             password=cls.existed_user['password'],
             email=cls.existed_user['email']
         )
+
+
+class ProfileViewTest(TestCase):
+    existed_user = {
+        'username': 'existeduser',
+        'password': 'qwerty1234',
+        'email': 'test@mail.com'
+    }
+
+    @classmethod
+    def setUpTestData(cls):
+        User.objects.create_user(
+            username=cls.existed_user['username'],
+            password=cls.existed_user['password'],
+            email=cls.existed_user['email']
+        )
+
+    def test_view_redirects_to_login_view_if_not_authenticated(self):
+        profile_url = reverse('profile')
+        login_url = reverse('login')
+        response = self.client.get(profile_url)
+        self.assertRedirects(response, f'{login_url}?next={profile_url}')
+
+    def test_view_url_exists_at_desired_location(self):
+        self.client.login(
+            username=self.existed_user['username'],
+            password=self.existed_user['password']
+        )
+        response = self.client.get('/blog/accounts/profile/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name(self):
+        self.client.login(
+            username=self.existed_user['username'],
+            password=self.existed_user['password']
+        )
+        response = self.client.get(reverse('profile'))
+        self.assertEqual(response.status_code, 200)
+
+
+class PasswordChangeViewTest(TestCase):
+    existed_user = {
+        'username': 'existeduser',
+        'password': 'qwerty1234',
+        'email': 'test@mail.com'
+    }
+
+    def setUp(self):
+        User.objects.create_user(
+            username=self.existed_user['username'],
+            password=self.existed_user['password'],
+            email=self.existed_user['email']
+        )
+
+    def test_view_url_exists_at_desired_location(self):
+        self.client.login(
+            username=self.existed_user['username'],
+            password=self.existed_user['password']
+        )
+        response = self.client.get('/blog/accounts/password_change/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name(self):
+        self.client.login(
+            username=self.existed_user['username'],
+            password=self.existed_user['password']
+        )
+        response = self.client.get(reverse('password_change'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_template_has_password_change_success_message(self):
+        data = {
+            'old_password': 'qwerty1234',
+            'new_password1': 'peri54ri7end',
+            'new_password2': 'peri54ri7end',
+        }
+        self.client.login(
+            username=self.existed_user['username'],
+            password=self.existed_user['password']
+        )
+        response = self.client.post(reverse('password_change'), data=data)
+        messages = list(get_messages(response.wsgi_request))
+        messages = [m.message for m in messages]
+        self.assertIn('Your password was successfully changed.', messages)
+
+
+class EmailChangeViewTest(TestCase):
+    existed_user = {
+        'username': 'existeduser',
+        'password': 'qwerty1234',
+        'email': 'test@mail.com'
+    }
+
+    def setUp(self):
+        User.objects.create_user(
+            username=self.existed_user['username'],
+            password=self.existed_user['password'],
+            email=self.existed_user['email']
+        )
+
+    def test_view_url_exists_at_desired_location(self):
+        self.client.login(
+            username=self.existed_user['username'],
+            password=self.existed_user['password']
+        )
+        response = self.client.get('/blog/accounts/email_change/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name(self):
+        self.client.login(
+            username=self.existed_user['username'],
+            password=self.existed_user['password']
+        )
+        response = self.client.get(reverse('email_change'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_template_has_email_change_success_message(self):
+        data = {
+            'new_email': 'newtest@gmail.com',
+        }
+        self.client.login(
+            username=self.existed_user['username'],
+            password=self.existed_user['password']
+        )
+        response = self.client.post(reverse('email_change'), data=data)
+        messages = list(get_messages(response.wsgi_request))
+        messages = [m.message for m in messages]
+        self.assertIn('Your email was successfully changed.', messages)

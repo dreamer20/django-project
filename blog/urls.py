@@ -14,6 +14,9 @@ urlpatterns = [
     path('accounts/activation/<str:activation_key>/', views.ActivationView.as_view(), name='django_registration_activate'),
     path('accounts/login/', views.LoginView.as_view(), name='login'),
     path('accounts/logout/', views.LogoutView.as_view(), name='logout'),
+    path('accounts/profile/', views.ProfileView.as_view(), name='profile'),
+    path('accounts/password_change/', views.PasswordChangeView.as_view(), name='password_change'),
+    path('accounts/email_change/', views.EmailChangeView.as_view(), name='email_change'),
     # path('accounts/', include('django_registration.backends.activation.urls')),
     # path('logout/', views.LogoutView.as_view(), name='logout'),
 ]

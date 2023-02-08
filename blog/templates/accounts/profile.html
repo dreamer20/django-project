@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Profile
+{% endblock title %}
+
+{% block content %}
+<div class="container">
+    {% include "navbar.html" %}
+<div class="row">
+    <div class="col">
+        <h4>Profile</h4>
+        <div class="card">
+            <div class="card-body">
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.level_tag == 'info' %}
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                      </div>       
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-4 col-md-3 col-lg-2">
+                            <div class="text-center">
+                                <img src="https://via.placeholder.com/200" class="img-thumbnail mb-2" alt="profile picture">
+                                <h4>{{ user.username }}</h4>
+                            </div>
+                            <div class="list-group list-group-flush mb-3">
+                                {% block profile_list %}
+                                    <a href="{% url 'password_change' %}" class="list-group-item list-group-item-action">Email</a>
+                                    <a href="{% url 'password_change' %}" class="list-group-item list-group-item-action">Password change</a>
+                                {% endblock profile_list %}
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-8 col-md-9 col-lg-10">
+                            {% block profile_content %}{% endblock profile_content %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+{% endblock content %}

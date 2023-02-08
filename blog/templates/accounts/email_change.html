@@ -1,0 +1,22 @@
+{% extends 'accounts/profile.html' %}
+
+{% block profile_list %}
+    <a href="{% url 'email_change' %}" class="list-group-item list-group-item-action list-group-item-secondary">Email</a>
+    <a href="{% url 'password_change' %}" class="list-group-item list-group-item-action">Password change</a>
+{% endblock profile_list %}
+
+{% block profile_content %}
+    <form method="POST" style="max-width: 300px;">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="mb-3">
+            <label class="form-label" for="{{field.auto_id}}">{{ field.label }}</label>
+            {{ field }}
+            {% for error in field.errors %}
+                <div class="form-text text-danger">{{ error }}</div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+        <button class="btn btn-primary" type="submit">Update email</button>
+    </form>
+{% endblock profile_content %}

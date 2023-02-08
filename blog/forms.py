@@ -2,9 +2,13 @@ from django import forms
 from django.contrib.auth import password_validation
 from django.contrib.auth import forms as authForms
 from django_registration.forms import RegistrationForm
+from django.core.validators import EmailValidator
+from .models import User
 
 
 class RegisterForm(RegistrationForm):
+    class Meta(RegistrationForm.Meta):
+        model = User
     common_attrs = {'class': 'form-control'}
 
     username = forms.CharField(
@@ -61,4 +65,34 @@ class SetPasswordForm(authForms.SetPasswordForm):
         label="New password confirmation",
         strip=False,
         widget=forms.PasswordInput(common_attrs),
+    )
+
+
+class PasswordChangeForm(authForms.PasswordChangeForm):
+    common_attrs = {'class': 'form-control'}
+
+    old_password = forms.CharField(
+        label="Old password",
+        strip=False,
+        widget=forms.PasswordInput(common_attrs),
+    )
+    new_password1 = forms.CharField(
+        label="New password",
+        widget=forms.PasswordInput(common_attrs),
+        strip=False,
+    )
+    new_password2 = forms.CharField(
+        label="New password confirmation",
+        strip=False,
+        widget=forms.PasswordInput(common_attrs),
+    )
+
+
+class EmailForm(forms.Form):
+    common_attrs = {'class': 'form-control'}
+
+    new_email = forms.EmailField(
+        label="Email",
+        widget=forms.EmailInput(common_attrs),
+        validators=[EmailValidator]
     )
