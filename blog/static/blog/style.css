@@ -17,3 +17,7 @@ body {
 .article-title-link {
   text-decoration: None;
 }
+
+.article-preview-footer {
+  color: #adb5bd;
+}

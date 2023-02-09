@@ -20,13 +20,29 @@
         {% endif %}
     {% endfor %}
 {% endif %}
-<div class="row">
-    <div class="col">
+<div class="row justify-content-center">
+    <div class="col-8">
         {% for article in article_list %}
             <article>
-                <h2><a class="article-title-link" href="#">{{ article.title }}</a></h2>
-                {{ article.preview|safe }}
-                <p>{{ article.author.username }}</p>
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="card-title">
+                            <h3><a class="article-title-link" href="#">{{ article.title }}</a></h3>
+                        </div>
+                        {{ article.preview|safe }}
+                        <div class="mb-3">
+                            <a class="btn btn-outline-primary" href="#" role="button">Read more</a>
+                        </div>
+                        <div class="row article-preview-footer">
+                            <div class="col-12 col-sm-6">
+                                <div>Author: {{ article.author.username }}</div>
+                            </div>
+                            <div class="col-12 col-sm-6 text-end">
+                                <div>Publication date: {{ article.pud_date|date:"m.d.y" }} at {{ article.pud_date|date:"H:i" }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </article>
         {% endfor %}
     </div>
