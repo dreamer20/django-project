@@ -1,6 +1,8 @@
 from django import forms
 from django.contrib.auth import password_validation
 from django.contrib.auth import forms as authForms
+from django.contrib.flatpages.models import FlatPage
+from tinymce.widgets import TinyMCE
 from django_registration.forms import RegistrationForm
 from django.core.validators import EmailValidator
 from .models import User
@@ -96,3 +98,22 @@ class EmailForm(forms.Form):
         widget=forms.EmailInput(common_attrs),
         validators=[EmailValidator]
     )
+
+
+class ArticleForm(forms.Form):
+    common_attrs = {'class': 'form-control'}
+    title = forms.CharField(label='Title', widget=forms.TextInput(common_attrs))
+    preview = forms.CharField(
+        widget=TinyMCE(mce_attrs={'height': 200}),
+        help_text='Content that will be displayed on main page'
+    )
+    content = forms.CharField(widget=TinyMCE(attrs={'cols': 80, 'rows': 30}))
+    hidden = forms.BooleanField(
+        label='Hidden',
+        widget=forms.CheckboxInput({'class': 'form-check-input'}),
+        required=False,
+        help_text='Hide article from public view')
+    tags = forms.CharField(label='Tags', widget=forms.TextInput(common_attrs), required=False)
+
+    class Meta:
+        model = FlatPage

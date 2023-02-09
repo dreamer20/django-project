@@ -13,3 +13,7 @@ body {
   border-bottom-right-radius: 0.375rem;
   border-bottom-left-radius: 0.375rem;
 }
+
+.article-title-link {
+  text-decoration: None;
+}

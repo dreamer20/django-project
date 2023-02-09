@@ -30,6 +30,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+
     'blog.apps.BlogConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -37,6 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
+    'django.contrib.flatpages',
+    'tinymce',
+    'taggit',
 ]
 
 MIDDLEWARE = [
@@ -84,7 +89,7 @@ DATABASES = {
     }
 }
 
-
+SITE_ID = 1
 AUTH_USER_MODEL = 'blog.User'
 
 LOGIN_URL = '/blog/accounts/login/'

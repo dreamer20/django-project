@@ -13,15 +13,19 @@ from django.urls import reverse
 from django.contrib.auth import update_session_auth_hash
 from django.http import HttpResponseRedirect
 from django.views.generic.base import TemplateView
-from .forms import RegisterForm, LoginForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm, EmailForm
+from django.views.generic import ListView
+from .forms import RegisterForm, LoginForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm, EmailForm, ArticleForm
 from django.contrib import messages
+from .models import Article
 # Create your views here.
 
 
-def index(request):
-    if request.user.is_authenticated:
-        return render(request, 'index.html', {'user': request.user})
-    return render(request, 'index.html')
+class IndexView(ListView):
+    template_name = 'index.html'
+    context_object_name = 'article_list'
+
+    def get_queryset(self):
+        return Article.objects.all()
 
 
 class RegisterView(reg_views.RegistrationView):
@@ -155,7 +159,11 @@ class LogoutView(views.LogoutView):
 
 class ProfileView(LoginRequiredMixin, TemplateView):
     template_name = 'accounts/profile.html'
-    form_class = PasswordChangeForm
+    form_class = ArticleForm
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
 
 
 class PasswordChangeView(LoginRequiredMixin, views.PasswordChangeView):
@@ -187,3 +195,20 @@ class EmailChangeView(LoginRequiredMixin, TemplateView):
             request.user.save()
             messages.info(self.request, 'Your email was successfully changed.')
         return render(request, self.template_name, {'form': form})
+
+
+class CreateArticleView(LoginRequiredMixin, TemplateView):
+    template_name = 'article.html'
+    form_class = ArticleForm
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+
+        if form.is_valid():
+            request.user.article_set.create(**form.cleaned_data)
+            messages.info(self.request, 'Article created')
+        return redirect(reverse('create_article'))

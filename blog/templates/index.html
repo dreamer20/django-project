@@ -16,10 +16,21 @@
                         {{ message }}
                     </div>
                 </div>
-            </div>                
+            </div>
         {% endif %}
     {% endfor %}
 {% endif %}
+<div class="row">
+    <div class="col">
+        {% for article in article_list %}
+            <article>
+                <h2><a class="article-title-link" href="#">{{ article.title }}</a></h2>
+                {{ article.preview|safe }}
+                <p>{{ article.author.username }}</p>
+            </article>
+        {% endfor %}
+    </div>
+</div>
 </div>
 
 {% endblock content %}

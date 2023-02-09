@@ -3,6 +3,7 @@ from django.urls import reverse
 from blog.models import User
 from django.contrib.messages import get_messages
 
+
 class RegisterViewTest(TestCase):
     existed_user = {
         'username': 'existeduser',
@@ -317,3 +318,59 @@ class EmailChangeViewTest(TestCase):
         messages = list(get_messages(response.wsgi_request))
         messages = [m.message for m in messages]
         self.assertIn('Your email was successfully changed.', messages)
+
+
+class CreateArticleViewTest(TestCase):
+    existed_user = {
+        'username': 'existeduser',
+        'password': 'qwerty1234',
+        'email': 'test@mail.com'
+    }
+
+    @classmethod
+    def setUpTestData(cls):
+        User.objects.create_user(
+            username=cls.existed_user['username'],
+            password=cls.existed_user['password'],
+            email=cls.existed_user['email']
+        )
+
+    def test_view_redirects_to_login_view_if_not_authenticated(self):
+        profile_url = reverse('create_article')
+        login_url = reverse('login')
+        response = self.client.get(profile_url)
+        self.assertRedirects(response, f'{login_url}?next={profile_url}')
+
+    def test_view_url_exists_at_desired_location(self):
+        self.client.login(
+            username=self.existed_user['username'],
+            password=self.existed_user['password']
+        )
+        response = self.client.get('/blog/article/create/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name(self):
+        self.client.login(
+            username=self.existed_user['username'],
+            password=self.existed_user['password']
+        )
+        response = self.client.get(reverse('create_article'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_create_article(self):
+        self.client.login(
+            username=self.existed_user['username'],
+            password=self.existed_user['password']
+        )
+        data = {
+            'title': 'hello',
+            'content': 'hello',
+            'preview': 'hello',
+        }
+        response = self.client.post(reverse('create_article'), data)
+        self.assertRedirects(response, reverse('create_article'))
+        messages = list(get_messages(response.wsgi_request))
+        messages = [m.message for m in messages]
+        user = User.objects.get(username=self.existed_user['username'])
+        self.assertEqual(len(user.article_set.all()), 1)
+        self.assertIn('Article created', messages)

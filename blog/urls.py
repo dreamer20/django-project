@@ -3,7 +3,7 @@ from . import views
 
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('', views.IndexView.as_view(), name='index'),
     path('accounts/password_reset/', views.PasswordResetView.as_view(), name='password_reset'),
     path('accounts/password_reset/done/', views.PasswordResetDoneView.as_view(), name='password_reset_done'),
     path('accounts/reset/<uidb64>/<token>/', views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
@@ -17,6 +17,5 @@ urlpatterns = [
     path('accounts/profile/', views.ProfileView.as_view(), name='profile'),
     path('accounts/password_change/', views.PasswordChangeView.as_view(), name='password_change'),
     path('accounts/email_change/', views.EmailChangeView.as_view(), name='email_change'),
-    # path('accounts/', include('django_registration.backends.activation.urls')),
-    # path('logout/', views.LogoutView.as_view(), name='logout'),
+    path('article/create/', views.CreateArticleView.as_view(), name='create_article'),
 ]
