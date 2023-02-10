@@ -19,6 +19,7 @@ urlpatterns = [
     path('accounts/email_change/', views.EmailChangeView.as_view(), name='email_change'),
     path('accounts/articles/', views.UserArticleList.as_view(), name='user_articles'),
     path('article/create/', views.CreateArticleView.as_view(), name='create_article'),
+    path('article/<int:id>/', views.ArticleView.as_view(), name='article'),
     path('article/<int:id>/show/', views.ArticleShowView.as_view(), name='show_article'),
     path('article/<int:id>/hide/', views.ArticleHideView.as_view(), name='hide_article'),
 ]

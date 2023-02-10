@@ -197,7 +197,7 @@ class EmailChangeView(LoginRequiredMixin, TemplateView):
 
 
 class CreateArticleView(LoginRequiredMixin, TemplateView):
-    template_name = 'article.html'
+    template_name = 'create_article.html'
     form_class = ArticleForm
 
     def get(self, request, *args, **kwargs):
@@ -238,3 +238,11 @@ class ArticleHideView(LoginRequiredMixin, TemplateView):
         article.hidden = True
         article.save()
         return redirect(reverse('profile'))
+
+
+class ArticleView(TemplateView):
+    template_name = 'article.html'
+
+    def get(self, request, *args, **kwargs):
+        article = Article.objects.get(pk=kwargs['id'])
+        return render(request, self.template_name, {'article': article})

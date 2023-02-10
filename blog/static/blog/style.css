@@ -18,7 +18,8 @@ body {
   text-decoration: None;
 }
 
-.article-preview-footer {
+.article-preview-footer,
+.article-header {
   color: #adb5bd;
 }
 .options_dropdown {

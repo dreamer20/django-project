@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
-from blog.models import User
+from blog.models import User, Article
 from django.contrib.messages import get_messages
 
 
@@ -417,3 +417,40 @@ class UserArticleListTest(TestCase):
         response = self.client.get(reverse('user_articles'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'accounts/article_list.html')
+
+
+class ArticleViewTest(TestCase):
+    existed_user = {
+        'username': 'existeduser',
+        'password': 'qwerty1234',
+        'email': 'test@mail.com'
+    }
+
+    @classmethod
+    def setUpTestData(cls):
+        user = User.objects.create_user(
+            username=cls.existed_user['username'],
+            password=cls.existed_user['password'],
+            email=cls.existed_user['email']
+        )
+
+        user.article_set.create(
+            content='hello',
+            preview='hello',
+            title='some title',
+        )
+
+    def test_view_url_exists_at_desired_location(self):
+        article = Article.objects.all()[0]
+        response = self.client.get(f'/blog/article/{article.id}/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name(self):
+        article = Article.objects.all()[0]
+        response = self.client.get(reverse('article', kwargs={'id': article.id}))
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_uses_correct_template(self):
+        article = Article.objects.all()[0]
+        response = self.client.get(reverse('article', kwargs={'id': article.id}))
+        self.assertTemplateUsed(response, 'article.html')
