@@ -21,3 +21,9 @@ body {
 .article-preview-footer {
   color: #adb5bd;
 }
+.options_dropdown {
+  text-decoration: none;
+}
+.options_dropdown::after {
+  border: none;
+}

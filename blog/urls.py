@@ -17,5 +17,8 @@ urlpatterns = [
     path('accounts/profile/', views.ProfileView.as_view(), name='profile'),
     path('accounts/password_change/', views.PasswordChangeView.as_view(), name='password_change'),
     path('accounts/email_change/', views.EmailChangeView.as_view(), name='email_change'),
+    path('accounts/articles/', views.UserArticleList.as_view(), name='user_articles'),
     path('article/create/', views.CreateArticleView.as_view(), name='create_article'),
+    path('article/<int:id>/show/', views.ArticleShowView.as_view(), name='show_article'),
+    path('article/<int:id>/hide/', views.ArticleHideView.as_view(), name='hide_article'),
 ]

@@ -31,15 +31,50 @@
                             </div>
                             <div class="list-group list-group-flush mb-3">
                                 {% block profile_list %}
-                                    <a href="{% url 'password_change' %}" class="list-group-item list-group-item-action">Email</a>
+                                    <a href="{% url 'profile' %}" class="list-group-item list-group-item-action list-group-item-secondary">Articles</a>
+                                    <a href="{% url 'email_change' %}" class="list-group-item list-group-item-action">Email</a>
                                     <a href="{% url 'password_change' %}" class="list-group-item list-group-item-action">Password change</a>
                                 {% endblock profile_list %}
                             </div>
                         </div>
                         <div class="col-xs-12 col-sm-8 col-md-9 col-lg-10">
                             {% block profile_content %}
-
-                            {% endblock profile_content %}
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Title</th>
+                                        <th scope="col">Published</th>
+                                        <th scope="col">Options</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for article in article_list %}
+                                        <tr>
+                                            <td>{{ article.title }}</td>
+                                            <td>{{ article.pud_date|date:"m.d.y" }}</td>
+                                            <td>
+                                                <div class="dropdow">
+                                                    <a href="#" class="dropdown-toggle options_dropdown" data-bs-toggle="dropdown">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-three-dots" viewBox="0 0 16 16">
+                                                            <path d="M3 9.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm5 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/>
+                                                        </svg>
+                                                    </a>
+                                                    <ul class="dropdown-menu">
+                                                        <li><a class="dropdown-item" href="#">Edit</a></li>
+                                                        {% if article.hidden %}
+                                                            <li><a class="dropdown-item" href="{% url 'show_article' id=article.id %}">Show</a></li>
+                                                        {% else %}
+                                                            <li><a class="dropdown-item" href="{% url 'hide_article' id=article.id %}">Hide</a></li>
+                                                        {% endif %}
+                                                        <li><a class="dropdown-item text-danger" href="#">Delete</a></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>                                    
+                                    {% endfor %}
+                                    {% endblock profile_content %}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

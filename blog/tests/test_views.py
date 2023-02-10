@@ -374,3 +374,46 @@ class CreateArticleViewTest(TestCase):
         user = User.objects.get(username=self.existed_user['username'])
         self.assertEqual(len(user.article_set.all()), 1)
         self.assertIn('Article created', messages)
+
+
+class UserArticleListTest(TestCase):
+    existed_user = {
+        'username': 'existeduser',
+        'password': 'qwerty1234',
+        'email': 'test@mail.com'
+    }
+
+    @classmethod
+    def setUpTestData(cls):
+        User.objects.create_user(
+            username=cls.existed_user['username'],
+            password=cls.existed_user['password'],
+            email=cls.existed_user['email']
+        )
+
+    def test_view_redirects_to_login_view_if_not_authenticated(self):
+        user_articles_url = reverse('user_articles')
+        login_url = reverse('login')
+        response = self.client.get(user_articles_url)
+        self.assertRedirects(response, f'{login_url}?next={user_articles_url}')
+
+    def test_view_url_exists_at_desired_location(self):
+        self.client.login(
+            username=self.existed_user['username'],
+            password=self.existed_user['password']
+        )
+        response = self.client.get('/blog/accounts/articles/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name(self):
+        self.client.login(
+            username=self.existed_user['username'],
+            password=self.existed_user['password']
+        )
+        response = self.client.get(reverse('user_articles'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_uses_correct_template(self):
+        response = self.client.get(reverse('user_articles'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'accounts/article_list.html')

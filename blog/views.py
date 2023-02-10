@@ -157,13 +157,12 @@ class LogoutView(views.LogoutView):
     next_page = '/blog/'
 
 
-class ProfileView(LoginRequiredMixin, TemplateView):
+class ProfileView(LoginRequiredMixin, ListView):
     template_name = 'accounts/profile.html'
-    form_class = ArticleForm
+    context_object_name = 'article_list'
 
-    def get(self, request, *args, **kwargs):
-        form = self.form_class()
-        return render(request, self.template_name, {'form': form})
+    def get_queryset(self):
+        return self.request.user.article_set.all()
 
 
 class PasswordChangeView(LoginRequiredMixin, views.PasswordChangeView):
@@ -212,3 +211,30 @@ class CreateArticleView(LoginRequiredMixin, TemplateView):
             request.user.article_set.create(**form.cleaned_data)
             messages.info(self.request, 'Article created')
         return redirect(reverse('create_article'))
+
+
+class UserArticleList(LoginRequiredMixin, ListView):
+    template_name = 'accounts/article_list.html'
+    context_object_name = 'article_list'
+
+    def get(self, request, *args, **kwargs):
+        return render(request, self.template_name)
+
+    def get_queryset(self, request):
+        return Article.objects.filter(author=request.user).all()
+
+
+class ArticleShowView(LoginRequiredMixin, TemplateView):
+    def get(self, request, *args, **kwargs):
+        article = request.user.article_set.get(pk=kwargs['id'])
+        article.hidden = False
+        article.save()
+        return redirect(reverse('profile'))
+
+
+class ArticleHideView(LoginRequiredMixin, TemplateView):
+    def get(self, request, *args, **kwargs):
+        article = request.user.article_set.get(pk=kwargs['id'])
+        article.hidden = True
+        article.save()
+        return redirect(reverse('profile'))
