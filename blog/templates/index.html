@@ -27,11 +27,11 @@
                 <div class="card mb-4">
                     <div class="card-body">
                         <div class="card-title">
-                            <h3><a class="article-title-link" href="#">{{ article.title }}</a></h3>
+                            <h3><a class="article-title-link" href="{% url 'article' id=article.id %}">{{ article.title }}</a></h3>
                         </div>
                         {{ article.preview|safe }}
                         <div class="mb-3">
-                            <a class="btn btn-outline-primary" href="#" role="button">Read more</a>
+                            <a class="btn btn-outline-primary" href="{% url 'article' id=article.id %}" role="button">Read more</a>
                         </div>
                         <div class="row article-preview-footer">
                             <div class="col-12 col-sm-6">
