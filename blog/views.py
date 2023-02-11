@@ -16,6 +16,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic import ListView
 from .forms import RegisterForm, LoginForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm, EmailForm, ArticleForm
 from django.contrib import messages
+from django.core.paginator import Paginator
 from .models import Article
 # Create your views here.
 
@@ -23,9 +24,10 @@ from .models import Article
 class IndexView(ListView):
     template_name = 'index.html'
     context_object_name = 'article_list'
+    paginate_by = 10
 
     def get_queryset(self):
-        return Article.objects.all()
+        return Article.objects.order_by('-pub_date')
 
 
 class RegisterView(reg_views.RegistrationView):
