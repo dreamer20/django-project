@@ -27,7 +27,7 @@
                 <div class="card mb-4">
                     <div class="card-body">
                         <div class="card-title">
-                            <h3><a class="article-title-link" href="{% url 'article' id=article.id %}">{{ article.title }}</a></h3>
+                            <h2><a class="article-title-link" href="{% url 'article' id=article.id %}">{{ article.title }}</a></h2>
                         </div>
                         {{ article.preview|safe }}
                         <div class="mb-3">
