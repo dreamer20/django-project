@@ -27,7 +27,7 @@ class IndexView(ListView):
     paginate_by = 10
 
     def get_queryset(self):
-        return Article.objects.order_by('-pub_date')
+        return Article.objects.filter(hidden=False).order_by('-pub_date')
 
 
 class RegisterView(reg_views.RegistrationView):
