@@ -414,6 +414,10 @@ class UserArticleListTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_view_uses_correct_template(self):
+        self.client.login(
+            username=self.existed_user['username'],
+            password=self.existed_user['password']
+        )
         response = self.client.get(reverse('user_articles'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'accounts/article_list.html')
@@ -454,3 +458,48 @@ class ArticleViewTest(TestCase):
         article = Article.objects.all()[0]
         response = self.client.get(reverse('article', kwargs={'id': article.id}))
         self.assertTemplateUsed(response, 'article.html')
+
+
+class IndexViewTest(TestCase):
+    existed_user = {
+        'username': 'existeduser',
+        'password': 'qwerty1234',
+        'email': 'test@mail.com'
+    }
+
+    @classmethod
+    def setUpTestData(cls):
+        user = User.objects.create_user(
+            username=cls.existed_user['username'],
+            password=cls.existed_user['password'],
+            email=cls.existed_user['email']
+        )
+
+        user.article_set.create(
+            content='hello',
+            preview='hello',
+            title='some title',
+        )
+        user.article_set.create(
+            content='hello2',
+            preview='hello2',
+            title='some title',
+        )
+        user.article_set.create(
+            content='hello3',
+            preview='hello3',
+            title='some title',
+            hidden=True
+        )
+
+    def test_view_url_accessible_by_name(self):
+        response = self.client.get(reverse('index'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_uses_correct_template(self):
+        response = self.client.get(reverse('index'))
+        self.assertTemplateUsed(response, 'index.html')
+
+    def test_view_does_not_show_hidden_articles(self):
+        response = self.client.get(reverse('index'))
+        self.assertEqual(len(response.context['article_list']), 2)
