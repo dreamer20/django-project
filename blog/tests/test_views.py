@@ -503,3 +503,35 @@ class IndexViewTest(TestCase):
     def test_view_does_not_show_hidden_articles(self):
         response = self.client.get(reverse('index'))
         self.assertEqual(len(response.context['article_list']), 2)
+
+
+class AvatarViewTest(TestCase):
+    existed_user = {
+        'username': 'existeduser',
+        'password': 'qwerty1234',
+        'email': 'test@mail.com'
+    }
+
+    @classmethod
+    def setUpTestData(self):
+        User.objects.create_user(
+            username=self.existed_user['username'],
+            password=self.existed_user['password'],
+            email=self.existed_user['email']
+        )
+
+    def test_view_url_exists_at_desired_location(self):
+        self.client.login(
+            username=self.existed_user['username'],
+            password=self.existed_user['password']
+        )
+        response = self.client.get('/blog/accounts/avatar/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_url_accessible_by_name(self):
+        self.client.login(
+            username=self.existed_user['username'],
+            password=self.existed_user['password']
+        )
+        response = self.client.get(reverse('avatar'))
+        self.assertEqual(response.status_code, 200)

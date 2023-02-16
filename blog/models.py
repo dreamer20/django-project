@@ -11,6 +11,15 @@ class User(AbstractUser):
     pass
 
 
+class Profile(models.Model):
+    avatar = models.ImageField(upload_to='avatars/')
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        primary_key=True,
+    )
+
+
 class Article(models.Model):
     title = models.CharField(max_length=300, default='Title')
     preview = tinymce_models.HTMLField(default='')

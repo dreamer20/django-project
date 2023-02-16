@@ -14,10 +14,9 @@ from django.contrib.auth import update_session_auth_hash
 from django.http import HttpResponseRedirect
 from django.views.generic.base import TemplateView
 from django.views.generic import ListView
-from .forms import RegisterForm, LoginForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm, EmailForm, ArticleForm
+from .forms import RegisterForm, LoginForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm, EmailForm, ArticleForm, AvatarForm
 from django.contrib import messages
-from django.core.paginator import Paginator
-from .models import Article
+from .models import Article, Profile
 # Create your views here.
 
 
@@ -248,3 +247,25 @@ class ArticleView(TemplateView):
     def get(self, request, *args, **kwargs):
         article = Article.objects.get(pk=kwargs['id'])
         return render(request, self.template_name, {'article': article})
+
+
+class AvatarView(LoginRequiredMixin, TemplateView):
+    template_name = 'accounts/avatar_form.html'
+    form_class = AvatarForm
+
+    def get(self, request, *args, **kwargs):
+        form = self.form_class()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST, request.FILES)
+        if form.is_valid():
+            if hasattr(request.user, 'profile'):
+                request.user.profile.avatar = request.FILES['avatar']
+                request.user.profile.save()
+            else:
+                profile = Profile(avatar=request.FILES['avatar'], user=request.user)
+                profile.save()
+            messages.info(self.request, 'Your avatar was successfully changed.')
+            return redirect(reverse('avatar'))
+        return render(request, self.template_name, {'form': form})

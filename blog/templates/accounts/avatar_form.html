@@ -2,13 +2,13 @@
 
 {% block profile_list %}
     <a href="{% url 'profile' %}" class="list-group-item list-group-item-action">Articles</a>
-    <a href="{% url 'email_change' %}" class="list-group-item list-group-item-action list-group-item-secondary">Email</a>
+    <a href="{% url 'email_change' %}" class="list-group-item list-group-item-action">Email</a>
     <a href="{% url 'password_change' %}" class="list-group-item list-group-item-action">Password change</a>
-    <a href="{% url 'avatar' %}" class="list-group-item list-group-item-action">Avatar</a>
+    <a href="{% url 'avatar' %}" class="list-group-item list-group-item-action list-group-item-secondary">Avatar</a>
 {% endblock profile_list %}
 
 {% block profile_content %}
-    <form method="POST" style="max-width: 300px;">
+    <form method="POST" style="max-width: 300px;" enctype="multipart/form-data">
         {% csrf_token %}
         {% for field in form %}
         <div class="mb-3">
@@ -19,6 +19,6 @@
             {% endfor %}
         </div>
         {% endfor %}
-        <button class="btn btn-primary" type="submit">Update email</button>
+        <button class="btn btn-primary" type="submit">Set avatar</button>
     </form>
 {% endblock profile_content %}

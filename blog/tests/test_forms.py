@@ -1,5 +1,8 @@
 from django.test import TestCase
-from blog.forms import RegisterForm, LoginForm
+from blog.forms import RegisterForm, LoginForm, AvatarForm
+from django.core.files.uploadedfile import SimpleUploadedFile
+from pathlib import Path
+from project.settings import MEDIA_ROOT
 
 
 class RegistrationFormTest(TestCase):
@@ -53,3 +56,12 @@ class LoginFormTest(TestCase):
         form = LoginForm()
         self.assertTrue(form.fields['password'].label is None
                         or form.fields['password'].label == 'password')
+
+
+class AvatarFormTest(TestCase):
+    def test_image_validation(self):
+        upload_file = open(Path(MEDIA_ROOT) / 'avatars' / 'test.jpg', 'rb')
+        file_dict = {'avatar': SimpleUploadedFile(upload_file.name, upload_file.read())}
+        form = AvatarForm(dict(), file_dict)
+        self.assertFalse(form.is_valid())
+        self.assertEqual(form.errors['avatar'][0], 'Image height is too big')

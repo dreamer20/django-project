@@ -29,6 +29,11 @@ body {
   border: none;
 }
 
+.avatar-wrapper {
+  max-width: 200px;
+  color: #bdbbbb;
+}
+
 .footer {
   background: #f8f9fa;
   color: #adb5bd;

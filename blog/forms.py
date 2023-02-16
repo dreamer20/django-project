@@ -5,7 +5,8 @@ from django.contrib.flatpages.models import FlatPage
 from tinymce.widgets import TinyMCE
 from django_registration.forms import RegistrationForm
 from django.core.validators import EmailValidator
-from .models import User
+from django.core.exceptions import ValidationError
+from .models import User, Profile
 
 
 class RegisterForm(RegistrationForm):
@@ -117,3 +118,21 @@ class ArticleForm(forms.Form):
 
     class Meta:
         model = FlatPage
+
+
+class AvatarForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['avatar']
+
+    common_attrs = {'class': 'form-control'}
+    avatar = forms.ImageField(label='Avatar', widget=forms.ClearableFileInput(common_attrs))
+
+    def clean_avatar(self):
+        avatar = self.cleaned_data['avatar']
+
+        if avatar.image.height > 1000:
+            raise ValidationError('Image height is too big')
+        if avatar.image.width > 1000:
+            raise ValidationError('Image width is too big')
+        return avatar

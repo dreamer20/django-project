@@ -1,4 +1,6 @@
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from . import views
 
 
@@ -18,6 +20,7 @@ urlpatterns = [
     path('accounts/password_change/', views.PasswordChangeView.as_view(), name='password_change'),
     path('accounts/email_change/', views.EmailChangeView.as_view(), name='email_change'),
     path('accounts/articles/', views.UserArticleList.as_view(), name='user_articles'),
+    path('accounts/avatar/', views.AvatarView.as_view(), name='avatar'),
     path('article/create/', views.CreateArticleView.as_view(), name='create_article'),
     path('article/<int:id>/', views.ArticleView.as_view(), name='article'),
     path('article/<int:id>/show/', views.ArticleShowView.as_view(), name='show_article'),
