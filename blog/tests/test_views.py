@@ -1,8 +1,11 @@
 from django.test import TestCase
 from django.urls import reverse
 from blog.models import User, Article
+from django.core.files.uploadedfile import SimpleUploadedFile
+from pathlib import Path
+from project.settings import MEDIA_ROOT
 from django.contrib.messages import get_messages
-
+import os
 
 class RegisterViewTest(TestCase):
     existed_user = {
@@ -535,3 +538,21 @@ class AvatarViewTest(TestCase):
         )
         response = self.client.get(reverse('avatar'))
         self.assertEqual(response.status_code, 200)
+
+    def test_view_avatar_succesfully_uploaded(self):
+        self.client.login(
+            username=self.existed_user['username'],
+            password=self.existed_user['password']
+        )
+        upload_file = open(Path(MEDIA_ROOT) / 'avatars' / 'test_success.jpg', 'rb')
+        data = {'avatar': SimpleUploadedFile(upload_file.name, upload_file.read())}
+        response = self.client.post(reverse('avatar'), data)
+        self.assertRedirects(response, reverse('avatar'))
+
+        messages = list(get_messages(response.wsgi_request))
+        messages = [m.message for m in messages]
+
+        self.assertIn('Your avatar was successfully changed.', messages)
+
+        user = User.objects.get(username=self.existed_user['username'])
+        os.remove(user.profile.avatar.path)

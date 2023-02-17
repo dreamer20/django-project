@@ -1,3 +1,4 @@
+import os
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
@@ -261,8 +262,10 @@ class AvatarView(LoginRequiredMixin, TemplateView):
         form = self.form_class(request.POST, request.FILES)
         if form.is_valid():
             if hasattr(request.user, 'profile'):
+                old_image_path = request.user.profile.avatar.path
                 request.user.profile.avatar = request.FILES['avatar']
                 request.user.profile.save()
+                os.remove(old_image_path)
             else:
                 profile = Profile(avatar=request.FILES['avatar'], user=request.user)
                 profile.save()
