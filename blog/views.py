@@ -2,7 +2,7 @@ import os
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render, redirect
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.contrib.auth import views
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
@@ -13,11 +13,12 @@ from django_registration import signals
 from django.urls import reverse
 from django.contrib.auth import update_session_auth_hash
 from django.http import HttpResponseRedirect
+from django.core import serializers
 from django.views.generic.base import TemplateView
 from django.views.generic import ListView
 from .forms import RegisterForm, LoginForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm, EmailForm, ArticleForm, AvatarForm
 from django.contrib import messages
-from .models import Article, Profile
+from .models import Article, Profile, Comment
 # Create your views here.
 
 
@@ -272,3 +273,22 @@ class AvatarView(LoginRequiredMixin, TemplateView):
             messages.info(self.request, 'Your avatar was successfully changed.')
             return redirect(reverse('avatar'))
         return render(request, self.template_name, {'form': form})
+
+
+class CommentsView(TemplateView):
+    template_name = 'article.html'
+
+    def get(self, request, *args, **kwargs):
+        comments = Comment.objects.filter(article=kwargs['id']).order_by('submit_date')
+
+        return JsonResponse(serializers.serialize('json', comments), safe=False)
+
+    def post(self, request, *args, **kwargs):
+        article = Article.objects.get(pk=kwargs['id'])
+        comment = article.comment_set.create(
+            comment=request.POST.get('comment'),
+            username=request.user.username,
+            user=request.user
+        )
+        comment = Comment.objects.filter(id=comment.id)
+        return JsonResponse(serializers.serialize('json', comment), safe=False)

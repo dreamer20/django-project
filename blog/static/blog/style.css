@@ -39,3 +39,17 @@ body {
   color: #adb5bd;
   border-top: 1px solid rgba(0,0,0, 0.175);
 }
+
+.comment_header {
+  background: #eee4dc;
+  font-size: 20px;
+}
+
+.comment_header_user {
+  background: #aecae1;
+}
+
+.comment_date {
+  font-size: 16px;
+  color: #a8a6a6;
+}

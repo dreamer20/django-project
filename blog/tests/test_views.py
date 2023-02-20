@@ -1,6 +1,8 @@
 from django.test import TestCase
 from django.urls import reverse
 from blog.models import User, Article
+from django.core import serializers
+import json
 from django.core.files.uploadedfile import SimpleUploadedFile
 from pathlib import Path
 from project.settings import MEDIA_ROOT
@@ -556,3 +558,67 @@ class AvatarViewTest(TestCase):
 
         user = User.objects.get(username=self.existed_user['username'])
         os.remove(user.profile.avatar.path)
+
+
+class CommentsViewTest(TestCase):
+    existed_user = {
+        'username': 'existeduser',
+        'password': 'qwerty1234',
+        'email': 'test@mail.com'
+    }
+
+    @classmethod
+    def setUpTestData(self):
+        user = User.objects.create_user(
+            username=self.existed_user['username'],
+            password=self.existed_user['password'],
+            email=self.existed_user['email']
+        )
+        self.article1 = user.article_set.create(
+            content='hello',
+            preview='hello',
+            title='some title',
+        )
+        article2 = user.article_set.create(
+            content='hello2',
+            preview='hello2',
+            title='some title2',
+        )
+        user.comment_set.create(
+            comment='some loreum ipsum',
+            username=user.username,
+            article=self.article1
+        )
+        user.comment_set.create(
+            comment='some loreum ipsum',
+            username=user.username,
+            article=self.article1
+        )
+        user.comment_set.create(
+            comment='some loreum ipsum',
+            username=user.username,
+            article=article2
+        )
+
+    def test_view_returns_list_of_comments_for_article(self):
+        response = self.client.get(reverse('comments', kwargs={'id': self.article1.id}))
+        self.assertEqual(response.status_code, 200)
+        list_of_comments = json.loads(response.json())
+        self.assertEqual(len(list_of_comments), 2)
+
+    def test_view_add_new_comment_to_article(self):
+        self.client.login(
+            username=self.existed_user['username'],
+            password=self.existed_user['password']
+        )
+        data = {
+            'comment': 'some comment'
+        }
+        response = self.client.post(
+            reverse('comments', kwargs={'id': self.article1.id}),
+            data)
+        self.assertEqual(response.status_code, 200)
+        article = Article.objects.get(pk=self.article1.id)
+        self.assertEqual(len(article.comment_set.all()), 3)
+        comment = json.loads(response.json())
+        self.assertEqual(comment[0]['fields']['comment'], 'some comment')

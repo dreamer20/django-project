@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load static %}
 {% block title %}
     Profile
 {% endblock title %}
@@ -12,7 +12,7 @@
 <div class="container">
     {% include "navbar.html" %}
 <div class="row justify-content-center">
-    <div class="col-8">
+    <div class="col-8 mb-3">
         <div class="card">
             <div class="card-body">
                 <div class="row article-header mb-3">
@@ -38,5 +38,48 @@
         </div>
     </div>
 </div>
+<div class="row justify-content-center">
+    <div class="col-8">
+        <div class="card">
+            <div class="card-body"> 
+                <div class="card-title mb-3">
+                    <h5>Comments <span id="comments_count">0</span></h5>
+                </div>
+                <div class="container mb-5" id="comments">
+                    {% comment %} <div class="row border-bottom border-3 mb-3">
+                        <div class="col-12 mb-2 comment_header">
+                            <img src="{% static 'blog/person-bounding-box.svg' %}" width='40' height='40' class="img-thumbnail me-1 mt-1 mb-1" alt="profile picture">
+                            <span>username</span>
+                        </div>
+                        <div class="col-12 mb-2">
+                            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Eius, sed ut maxime officia amet, facilis repudiandae exercitationem, vel adipisci quasi fuga earum minus voluptatum numquam. Harum ipsam exercitationem id voluptas!
+                        </div>
+                    </div> {% endcomment %}
+                </div>
+                {% if user.is_authenticated %}
+                    <div class="container">
+                        <div class="row mb-3">
+                            <div class="col-12 mb-2 comment_header comment_header_user">
+                                <img src="{% static 'blog/person-bounding-box.svg' %}" width='40' height='40' class="img-thumbnail me-1 mt-1 mb-1" alt="profile picture">
+                                <span>{{ user.username }}</span>
+                            </div>
+                            <div class="col-12 mb-2">
+                                <div class="mb-3">
+                                    {% csrf_token %}
+                                    <label for="comment_input" class="form-label">Your comment</label>
+                                    <textarea class="form-control" id="comment_input" rows="3"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <button id="comment_submit" class='btn btn-primary'>Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </div>
+</div>
+<script src="{% static 'blog/comments.js' %}"></script>
 {% endblock content %}

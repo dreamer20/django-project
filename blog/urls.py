@@ -25,4 +25,5 @@ urlpatterns = [
     path('article/<int:id>/', views.ArticleView.as_view(), name='article'),
     path('article/<int:id>/show/', views.ArticleShowView.as_view(), name='show_article'),
     path('article/<int:id>/hide/', views.ArticleHideView.as_view(), name='hide_article'),
+    path('article/<int:id>/comments/', views.CommentsView.as_view(), name='comments'),
 ]

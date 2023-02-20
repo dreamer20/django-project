@@ -31,3 +31,17 @@ class Article(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
     )
+
+
+class Comment(models.Model):
+    comment = models.TextField(max_length=2000)
+    submit_date = models.DateTimeField(default=timezone.now)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE
+    )
+    username = models.CharField(max_length=300)
+    article = models.ForeignKey(
+        Article,
+        on_delete=models.CASCADE
+    )
