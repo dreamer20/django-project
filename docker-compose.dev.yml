@@ -18,12 +18,6 @@ services:
   image: postgres
   ports:
   - 5432:5432
-  healthcheck:
-    test: ["CMD", "psql", "-U", "postgres"]
-    interval: 1m30s
-    timeout: 10s
-    retries: 3
-    start_period: 40s
 
   environment:
   - POSTGRES_PASSWORD=peri54ri7end
