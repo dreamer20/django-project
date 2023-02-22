@@ -1,7 +1,6 @@
 from django import forms
 from django.contrib.auth import password_validation
 from django.contrib.auth import forms as authForms
-from django.contrib.flatpages.models import FlatPage
 from tinymce.widgets import TinyMCE
 from django_registration.forms import RegistrationForm
 from django.core.validators import EmailValidator
@@ -115,9 +114,6 @@ class ArticleForm(forms.Form):
         required=False,
         help_text='Hide article from public view')
     tags = forms.CharField(label='Tags', widget=forms.TextInput(common_attrs), required=False)
-
-    class Meta:
-        model = FlatPage
 
 
 class AvatarForm(forms.ModelForm):
