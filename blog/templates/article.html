@@ -60,7 +60,7 @@
                     <div class="container">
                         <div class="row mb-3">
                             <div class="col-12 mb-2 comment_header comment_header_user">
-                                <img src="{% static 'blog/person-bounding-box.svg' %}" width='40' height='40' class="img-thumbnail me-1 mt-1 mb-1" alt="profile picture">
+                                <img src="{{ user.profile.avatar.url }}" width='40' height='40' class="img-thumbnail me-1 mt-1 mb-1" alt="profile picture">
                                 <span>{{ user.username }}</span>
                             </div>
                             <div class="col-12 mb-2">

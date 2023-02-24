@@ -280,8 +280,7 @@ class CommentsView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         comments = Comment.objects.filter(article=kwargs['id']).order_by('submit_date')
-
-        return JsonResponse(serializers.serialize('json', comments), safe=False)
+        return JsonResponse(serializers.serialize('json', comments, use_natural_foreign_keys=True), safe=False)
 
     def post(self, request, *args, **kwargs):
         article = Article.objects.get(pk=kwargs['id'])

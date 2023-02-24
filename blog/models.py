@@ -19,6 +19,9 @@ class Profile(models.Model):
         primary_key=True,
     )
 
+    def natural_key(self):
+        return (self.avatar.url, )
+
 
 class Article(models.Model):
     title = models.CharField(max_length=300, default='Title')
@@ -39,6 +42,11 @@ class Comment(models.Model):
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
+    )
+    profile = models.ForeignKey(
+        Profile,
+        on_delete=models.CASCADE,
+        default=3
     )
     username = models.CharField(max_length=300)
     article = models.ForeignKey(

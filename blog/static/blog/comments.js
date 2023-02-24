@@ -12,8 +12,16 @@ function createCommentElement(comment) {
     const img = document.createElement('img');
     img.className = 'img-thumbnail me-1 mt-1 mb-1';
     img.setAttribute('width', 40);
+
+    const avatar = comment.fields.profile;
+
+    if (avatar) {
+        img.setAttribute('src', avatar);
+    } else {
+        img.setAttribute('src', '/static/blog/person-bounding-box.svg');
+    }
+    
     img.setAttribute('height', 40);
-    img.setAttribute('src', '/static/blog/person-bounding-box.svg');
     img.setAttribute('alt', 'Profile picture');
     
     const username = document.createElement('span');
