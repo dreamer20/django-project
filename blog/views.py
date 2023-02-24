@@ -18,6 +18,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic import ListView
 from .forms import RegisterForm, LoginForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm, EmailForm, ArticleForm, AvatarForm
 from django.contrib import messages
+from django.contrib.postgres.search import SearchVector
 from .models import Article, Profile, Comment
 # Create your views here.
 
@@ -291,3 +292,17 @@ class CommentsView(TemplateView):
         )
         comment = Comment.objects.filter(id=comment.id)
         return JsonResponse(serializers.serialize('json', comment), safe=False)
+
+
+class SearchView(ListView):
+    template_name = 'search.html'
+    context_object_name = 'article_list'
+    paginate_by = 10
+
+    def get_queryset(self):
+        search_string = self.request.GET.get('q')
+        if search_string is None:
+            return Article.objects.filter(hidden=False).order_by('-pub_date')
+        return Article.objects.annotate(
+            search=SearchVector('title', 'content', 'preview'),
+        ).filter(search=search_string, hidden=False).order_by('-pub_date')

@@ -622,3 +622,45 @@ class CommentsViewTest(TestCase):
         self.assertEqual(len(article.comment_set.all()), 3)
         comment = json.loads(response.json())
         self.assertEqual(comment[0]['fields']['comment'], 'some comment')
+
+
+class SearchViewTest(TestCase):
+    existed_user = {
+        'username': 'existeduser',
+        'password': 'qwerty1234',
+        'email': 'test@mail.com'
+    }
+
+    @classmethod
+    def setUpTestData(self):
+        user = User.objects.create_user(
+            username=self.existed_user['username'],
+            password=self.existed_user['password'],
+            email=self.existed_user['email']
+        )
+        user.article_set.create(
+            content='hello',
+            preview='hello',
+            title='Hello',
+        )
+        user.article_set.create(
+            content='hello 2',
+            preview='some text',
+            title='some title2',
+        )
+        user.article_set.create(
+            content='my content',
+            preview='my content',
+            title='whats up?',
+        )
+
+    def test_view_without_query_sends_to_index_page(self):
+        response = self.client.get(reverse('search'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['article_list']), 3)
+
+    def test_view_shows_query_results(self):
+        search_url = reverse('search')
+        response = self.client.get(search_url + '?q=hello')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['article_list']), 2)
