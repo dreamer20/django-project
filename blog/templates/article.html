@@ -28,9 +28,9 @@
                 <h1 class="card-title">
                     {{ article.title }}
                 </h1>
-                <div>
+                <div class="mb-2">
                     {% for tag in article.tags.names %}
-                        <a href="#">{{tag}}</a>
+                        <a class="fw-lighter article_tag" href="{% url 'search' %}?tag={{ tag }}">{{tag}}</a>
                     {% endfor %}
                 </div>
                 {{ article.content|safe }}

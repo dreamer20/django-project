@@ -29,6 +29,11 @@
                         <div class="card-title">
                             <h2><a class="article-title-link" href="{% url 'article' id=article.id %}">{{ article.title }}</a></h2>
                         </div>
+                        <div class="mb-2">
+                            {% for tag in article.tags.names %}
+                                <a class="fw-lighter article_tag" href="{% url 'search' %}?tag={{ tag }}">{{tag}}</a>
+                            {% endfor %}
+                        </div>
                         {{ article.preview|safe }}
                         <div class="mb-3">
                             <a class="btn btn-outline-primary" href="{% url 'article' id=article.id %}" role="button">Read more</a>

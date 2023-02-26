@@ -53,3 +53,12 @@ body {
   font-size: 16px;
   color: #a8a6a6;
 }
+
+.article_tag {
+  text-decoration: none;
+}
+
+.article_tag:not(:last-child):after {
+  content: ', ';
+
+}

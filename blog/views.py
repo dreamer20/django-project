@@ -302,8 +302,14 @@ class SearchView(ListView):
 
     def get_queryset(self):
         search_string = self.request.GET.get('q')
-        if search_string is None:
-            return Article.objects.filter(hidden=False).order_by('-pub_date')
-        return Article.objects.annotate(
-            search=SearchVector('title', 'content', 'preview'),
-        ).filter(search=search_string, hidden=False).order_by('-pub_date')
+        tag = self.request.GET.get('tag')
+        articles = Article.objects.filter(hidden=False)
+
+        if tag is not None:
+            articles = Article.objects.filter(tags__name__in=[tag])
+        if search_string is not None:
+            articles = articles.annotate(
+                search=SearchVector('title', 'content', 'preview'),
+            ).filter(search=search_string)
+
+        return articles.order_by('-pub_date')

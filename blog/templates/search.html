@@ -23,12 +23,20 @@
 <div class="row justify-content-center">
     <div class="col-8">
         <h4> {{ article_list|length }} results</h4>
-        {% for article in article_list %}
+        {% if article_list|length == 0 %}
+            <p class="text-center fs-4">Nothing to be found.</p>
+        {% else %}
+            {% for article in article_list %}
             <article>
                 <div class="card mb-4">
                     <div class="card-body">
                         <div class="card-title">
                             <h2><a class="article-title-link" href="{% url 'article' id=article.id %}">{{ article.title }}</a></h2>
+                        </div>
+                        <div class="mb-2">
+                            {% for tag in article.tags.names %}
+                                <a class="fw-lighter article_tag" href="{% url 'search' %}?tag={{ tag }}">{{tag}}</a>
+                            {% endfor %}
                         </div>
                         {{ article.preview|safe }}
                         <div class="mb-3">
@@ -40,18 +48,19 @@
                             </div>
                             <div class="col-12 col-sm-6 text-end">
                                 <div>Published:
-                                    <span class="publication-date">{{ article.pub_date|date:"m/d/Y H:i" }} UTC</span>
+                                        <span class="publication-date">{{ article.pub_date|date:"m/d/Y H:i" }} UTC</span>
+                                </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </article>
-        {% endfor %}
-        {% if page_obj.has_other_pages %}
-            <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-center">
-                    {% if page_obj.has_previous %}
+                </article>
+            {% endfor %}
+        {% endif %}
+                {% if page_obj.has_other_pages %}
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
                         <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a></li>
                         <li class="page-item"><a class="page-link" href="?page=1">1</a></li>
                     {% else %}
