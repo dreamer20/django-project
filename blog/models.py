@@ -4,7 +4,6 @@ from django.contrib.auth.models import AbstractUser
 from taggit.managers import TaggableManager
 from tinymce import models as tinymce_models
 from django.utils import timezone
-# Create your models here.
 
 
 class User(AbstractUser):

@@ -1,27 +1,23 @@
 import os
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth import views, update_session_auth_hash
+from django.contrib import messages
+from django.contrib.postgres.search import SearchVector
 from django.shortcuts import render, redirect
-from django.http import Http404, JsonResponse
-from django.contrib.auth import views
+from django.http import Http404, JsonResponse, HttpResponseRedirect
 from django.template.loader import render_to_string
 from django.core.mail import send_mail
+from django.core import serializers
 from django.utils.encoding import force_str
 from django_registration.backends.activation import views as reg_views
 from django_registration.exceptions import ActivationError
 from django_registration import signals
 from django.urls import reverse
-from pathlib import Path
-from django.contrib.auth import update_session_auth_hash
-from django.http import HttpResponseRedirect
-from django.core import serializers
 from django.views.generic.base import TemplateView
 from django.views.generic import ListView
-from .forms import RegisterForm, LoginForm, PasswordResetForm, SetPasswordForm, PasswordChangeForm, EmailForm, ArticleForm, AvatarForm
-from django.contrib import messages
-from django.contrib.postgres.search import SearchVector
+from . import forms
 from .models import Article, Profile, Comment
-# Create your views here.
 
 
 class IndexView(ListView):
@@ -34,7 +30,7 @@ class IndexView(ListView):
 
 
 class RegisterView(reg_views.RegistrationView):
-    form_class = RegisterForm
+    form_class = forms.RegisterForm
     template_name = 'accounts/register.html'
     email_subject_template = 'email/activation_email_subject.txt'
 
@@ -132,7 +128,7 @@ class ActivationCompleteView(TemplateView):
 
 
 class LoginView(views.LoginView):
-    form_class = LoginForm
+    form_class = forms.LoginForm
     template_name = 'accounts/login.html'
     next_page = '/blog/'
 
@@ -143,7 +139,7 @@ class LoginView(views.LoginView):
 
 
 class PasswordResetView(views.PasswordResetView):
-    form_class = PasswordResetForm
+    form_class = forms.PasswordResetForm
     template_name = 'accounts/password_reset.html'
     success_url = '/blog/accounts/password_reset/done/'
 
@@ -153,7 +149,7 @@ class PasswordResetDoneView(views.PasswordResetDoneView):
 
 
 class PasswordResetConfirmView(views.PasswordResetConfirmView):
-    form_class = SetPasswordForm
+    form_class = forms.SetPasswordForm
     template_name = 'accounts/password_reset_confirm.html'
 
 
@@ -176,7 +172,7 @@ class ProfileView(LoginRequiredMixin, ListView):
 class PasswordChangeView(LoginRequiredMixin, views.PasswordChangeView):
     template_name = 'accounts/password_change.html'
     success_url = '/blog/accounts/password_change/'
-    form_class = PasswordChangeForm
+    form_class = forms.PasswordChangeForm
 
     def form_valid(self, form):
         form.save()
@@ -189,7 +185,7 @@ class PasswordChangeView(LoginRequiredMixin, views.PasswordChangeView):
 
 class EmailChangeView(LoginRequiredMixin, TemplateView):
     template_name = 'accounts/email_change.html'
-    form_class = EmailForm
+    form_class = forms.EmailForm
 
     def get(self, request, *args, **kwargs):
         form = self.form_class(initial={'new_email': request.user.email})
@@ -206,7 +202,7 @@ class EmailChangeView(LoginRequiredMixin, TemplateView):
 
 class CreateArticleView(LoginRequiredMixin, TemplateView):
     template_name = 'create_article.html'
-    form_class = ArticleForm
+    form_class = forms.ArticleForm
 
     def get(self, request, *args, **kwargs):
         form = self.form_class()
@@ -258,7 +254,7 @@ class ArticleView(TemplateView):
 
 class AvatarView(LoginRequiredMixin, TemplateView):
     template_name = 'accounts/avatar_form.html'
-    form_class = AvatarForm
+    form_class = forms.AvatarForm
 
     def get(self, request, *args, **kwargs):
         form = self.form_class()

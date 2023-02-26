@@ -1,13 +1,13 @@
+import os
+import json
+from pathlib import Path
 from django.test import TestCase
 from django.urls import reverse
-from blog.models import User, Article, Profile
-from django.core import serializers
-import json
 from django.core.files.uploadedfile import SimpleUploadedFile
-from pathlib import Path
-from project.settings import MEDIA_ROOT
 from django.contrib.messages import get_messages
-import os
+from project.settings import MEDIA_ROOT
+from blog.models import User, Article, Profile
+
 
 class RegisterViewTest(TestCase):
     existed_user = {
