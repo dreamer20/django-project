@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
-from blog.models import User, Article
+from blog.models import User, Article, Profile
 from django.core import serializers
 import json
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -49,6 +49,7 @@ class RegisterViewTest(TestCase):
         self.assertRedirects(response, reverse('django_registration_complete'))
         user = User.objects.get(username=newusername)
         self.assertEqual(newusername, user.username)
+        self.assertEqual('/blog/avatars/person-bounding-box.svg', user.profile.avatar.url)
 
     def test_view_redirects_to_index_page_if_authorized(self):
         self.client.login(
@@ -574,6 +575,8 @@ class CommentsViewTest(TestCase):
             password=self.existed_user['password'],
             email=self.existed_user['email']
         )
+        profile = Profile(avatar='avatars/person-bounding-box.svg', user=user)
+        profile.save()
         self.article1 = user.article_set.create(
             content='hello',
             preview='hello',
@@ -587,17 +590,20 @@ class CommentsViewTest(TestCase):
         user.comment_set.create(
             comment='some loreum ipsum',
             username=user.username,
-            article=self.article1
+            article=self.article1,
+            profile=user.profile
         )
         user.comment_set.create(
             comment='some loreum ipsum',
             username=user.username,
-            article=self.article1
+            article=self.article1,
+            profile=user.profile
         )
         user.comment_set.create(
             comment='some loreum ipsum',
             username=user.username,
-            article=article2
+            article=article2,
+            profile=user.profile
         )
 
     def test_view_returns_list_of_comments_for_article(self):

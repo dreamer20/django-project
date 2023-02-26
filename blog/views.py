@@ -11,6 +11,7 @@ from django_registration.backends.activation import views as reg_views
 from django_registration.exceptions import ActivationError
 from django_registration import signals
 from django.urls import reverse
+from pathlib import Path
 from django.contrib.auth import update_session_auth_hash
 from django.http import HttpResponseRedirect
 from django.core import serializers
@@ -38,7 +39,10 @@ class RegisterView(reg_views.RegistrationView):
     email_subject_template = 'email/activation_email_subject.txt'
 
     def form_valid(self, form):
-        success_url = self.get_success_url(self.register(form))
+        new_user = self.register(form)
+        profile = Profile(avatar='avatars/person-bounding-box.svg', user=new_user)
+        profile.save()
+        success_url = self.get_success_url(new_user)
         self.request.session['was_registered'] = True
         self.request.session['email'] = form.cleaned_data['email']
         return HttpResponseRedirect(success_url)
@@ -288,10 +292,11 @@ class CommentsView(TemplateView):
         comment = article.comment_set.create(
             comment=request.POST.get('comment'),
             username=request.user.username,
-            user=request.user
+            user=request.user,
+            profile=request.user.profile
         )
         comment = Comment.objects.filter(id=comment.id)
-        return JsonResponse(serializers.serialize('json', comment), safe=False)
+        return JsonResponse(serializers.serialize('json', comment, use_natural_foreign_keys=True), safe=False)
 
 
 class SearchView(ListView):

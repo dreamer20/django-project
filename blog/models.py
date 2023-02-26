@@ -45,8 +45,7 @@ class Comment(models.Model):
     )
     profile = models.ForeignKey(
         Profile,
-        on_delete=models.CASCADE,
-        default=3
+        on_delete=models.CASCADE
     )
     username = models.CharField(max_length=300)
     article = models.ForeignKey(
