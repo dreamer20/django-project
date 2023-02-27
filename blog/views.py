@@ -255,6 +255,15 @@ class ArticleShowView(LoginRequiredMixin, TemplateView):
         return redirect(reverse('profile'))
 
 
+class ArticleDeleteView(LoginRequiredMixin, TemplateView):
+    def get(self, request, *args, **kwargs):
+        article = request.user.article_set.get(pk=kwargs['id'])
+        article_title = article.title
+        article.delete()
+        messages.info(self.request, f'Article \'{article_title}\' was deleted')
+        return redirect(reverse('profile'))
+
+
 class ArticleHideView(LoginRequiredMixin, TemplateView):
     def get(self, request, *args, **kwargs):
         article = request.user.article_set.get(pk=kwargs['id'])

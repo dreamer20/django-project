@@ -736,3 +736,49 @@ class CategoryViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['article_list']), 1)
         self.assertTemplateUsed(response, 'index.html')
+
+
+class ArticleDeleteViewTest(TestCase):
+    existed_user = {
+        'username': 'existeduser',
+        'password': 'qwerty1234',
+        'email': 'test@mail.com'
+    }
+
+    @classmethod
+    def setUpTestData(self):
+        news = Category.objects.create(name='news')
+
+        user = User.objects.create_user(
+            username=self.existed_user['username'],
+            password=self.existed_user['password'],
+            email=self.existed_user['email']
+        )
+        self.article = user.article_set.create(
+            content='hello',
+            preview='hello',
+            title='Hello',
+            category=news,
+        )
+        user.article_set.create(
+            content='hello 2',
+            preview='some text',
+            title='some title2',
+            category=news,
+        )
+
+    def test_view_redirects_unauthorized_user_on_article_deletion(self):
+        delete_url = reverse('delete', kwargs={'id': self.article.id})
+        response = self.client.get(delete_url)
+        self.assertRedirects(response, reverse('login') + f'?next={delete_url}')
+
+    def test_view_deletes_article(self):
+        self.client.login(
+            username=self.existed_user['username'],
+            password=self.existed_user['password']
+        )
+        delete_url = reverse('delete', kwargs={'id': self.article.id})
+        response = self.client.get(delete_url)
+        articles = Article.objects.all()
+        self.assertRedirects(response, reverse('profile'))
+        self.assertEqual(len(articles), 1)

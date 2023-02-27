@@ -95,7 +95,7 @@
                                                         {% else %}
                                                             <li><a class="dropdown-item" href="{% url 'hide_article' id=article.id %}">Hide</a></li>
                                                         {% endif %}
-                                                        <li><a class="dropdown-item text-danger" href="#">Delete</a></li>
+                                                        <li><a class="dropdown-item text-danger" href="{% url 'delete' id=article.id %}">Delete</a></li>
                                                     </ul>
                                                 </div>
                                             </td>
