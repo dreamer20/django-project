@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.contrib.messages import get_messages
 from project.settings import MEDIA_ROOT
-from blog.models import User, Article, Profile
+from blog.models import User, Article, Profile, Category
 
 
 class RegisterViewTest(TestCase):
@@ -335,6 +335,7 @@ class CreateArticleViewTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
+        cls.news = Category.objects.create(name='news')
         User.objects.create_user(
             username=cls.existed_user['username'],
             password=cls.existed_user['password'],
@@ -372,6 +373,7 @@ class CreateArticleViewTest(TestCase):
             'title': 'hello',
             'content': 'hello',
             'preview': 'hello',
+            'category': self.news.id
         }
         response = self.client.post(reverse('create_article'), data)
         self.assertRedirects(response, reverse('create_article'))
@@ -438,6 +440,7 @@ class ArticleViewTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
+        articles = Category.objects.create(name='articles')
         user = User.objects.create_user(
             username=cls.existed_user['username'],
             password=cls.existed_user['password'],
@@ -448,6 +451,7 @@ class ArticleViewTest(TestCase):
             content='hello',
             preview='hello',
             title='some title',
+            category=articles,
         )
 
     def test_view_url_exists_at_desired_location(self):
@@ -475,6 +479,9 @@ class IndexViewTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
+        news = Category.objects.create(name='news')
+        articles = Category.objects.create(name='articles')
+
         user = User.objects.create_user(
             username=cls.existed_user['username'],
             password=cls.existed_user['password'],
@@ -485,17 +492,20 @@ class IndexViewTest(TestCase):
             content='hello',
             preview='hello',
             title='some title',
+            category=news,
         )
         user.article_set.create(
             content='hello2',
             preview='hello2',
             title='some title',
+            category=news,
         )
         user.article_set.create(
             content='hello3',
             preview='hello3',
             title='some title',
-            hidden=True
+            hidden=True,
+            category=articles,
         )
 
     def test_view_url_accessible_by_name(self):
@@ -570,6 +580,7 @@ class CommentsViewTest(TestCase):
 
     @classmethod
     def setUpTestData(self):
+        articles = Category.objects.create(name='articles')
         user = User.objects.create_user(
             username=self.existed_user['username'],
             password=self.existed_user['password'],
@@ -581,11 +592,13 @@ class CommentsViewTest(TestCase):
             content='hello',
             preview='hello',
             title='some title',
+            category=articles,
         )
         article2 = user.article_set.create(
             content='hello2',
             preview='hello2',
             title='some title2',
+            category=articles,
         )
         user.comment_set.create(
             comment='some loreum ipsum',
@@ -639,6 +652,7 @@ class SearchViewTest(TestCase):
 
     @classmethod
     def setUpTestData(self):
+        articles = Category.objects.create(name='articles')
         user = User.objects.create_user(
             username=self.existed_user['username'],
             password=self.existed_user['password'],
@@ -648,16 +662,19 @@ class SearchViewTest(TestCase):
             content='hello',
             preview='hello',
             title='Hello',
+            category=articles,
         )
         user.article_set.create(
             content='hello 2',
             preview='some text',
             title='some title2',
+            category=articles,
         )
         user.article_set.create(
             content='my content',
             preview='my content',
             title='whats up?',
+            category=articles,
         )
 
     def test_view_without_query_sends_to_index_page(self):
@@ -670,3 +687,52 @@ class SearchViewTest(TestCase):
         response = self.client.get(search_url + '?q=hello')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['article_list']), 2)
+
+
+class CategoryViewTest(TestCase):
+    existed_user = {
+        'username': 'existeduser',
+        'password': 'qwerty1234',
+        'email': 'test@mail.com'
+    }
+
+    @classmethod
+    def setUpTestData(self):
+        news = Category.objects.create(name='news')
+        articles = Category.objects.create(name='articles')
+
+        user = User.objects.create_user(
+            username=self.existed_user['username'],
+            password=self.existed_user['password'],
+            email=self.existed_user['email']
+        )
+        user.article_set.create(
+            content='hello',
+            preview='hello',
+            title='Hello',
+            category=news,
+        )
+        user.article_set.create(
+            content='hello 2',
+            preview='some text',
+            title='some title2',
+            category=news,
+        )
+        user.article_set.create(
+            content='my content',
+            preview='my content',
+            title='whats up?',
+            category=articles,
+        )
+
+    def test_view_shows_news_category(self):
+        response = self.client.get(reverse('category', kwargs={'category': 'news'}))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['article_list']), 2)
+        self.assertTemplateUsed(response, 'index.html')
+
+    def test_view_shows_article_category(self):
+        response = self.client.get(reverse('category', kwargs={'category': 'articles'}))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['article_list']), 1)
+        self.assertTemplateUsed(response, 'index.html')

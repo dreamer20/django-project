@@ -22,6 +22,13 @@ class Profile(models.Model):
         return (self.avatar.url, )
 
 
+class Category(models.Model):
+    name = models.CharField(max_length=300)
+
+    def __str__(self):
+        return self.name
+
+
 class Article(models.Model):
     title = models.CharField(max_length=300, default='Title')
     preview = tinymce_models.HTMLField(default='')
@@ -32,6 +39,11 @@ class Article(models.Model):
     author = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
+    )
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
+        default=1
     )
 
 

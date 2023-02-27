@@ -17,7 +17,7 @@ from django.urls import reverse
 from django.views.generic.base import TemplateView
 from django.views.generic import ListView
 from . import forms
-from .models import Article, Profile, Comment
+from .models import Article, Profile, Comment, Category
 
 
 class IndexView(ListView):
@@ -27,6 +27,16 @@ class IndexView(ListView):
 
     def get_queryset(self):
         return Article.objects.filter(hidden=False).order_by('-pub_date')
+
+
+class CategoryView(ListView):
+    template_name = 'index.html'
+    context_object_name = 'article_list'
+    paginate_by = 10
+
+    def get_queryset(self):
+        category = Category.objects.get(name=self.kwargs['category'])
+        return Article.objects.filter(hidden=False, category=category).order_by('-pub_date')
 
 
 class RegisterView(reg_views.RegistrationView):

@@ -5,7 +5,7 @@ from tinymce.widgets import TinyMCE
 from django_registration.forms import RegistrationForm
 from django.core.validators import EmailValidator
 from django.core.exceptions import ValidationError
-from .models import User, Profile
+from .models import User, Profile, Category
 
 
 class RegisterForm(RegistrationForm):
@@ -102,6 +102,7 @@ class EmailForm(forms.Form):
 
 class ArticleForm(forms.Form):
     common_attrs = {'class': 'form-control'}
+    form_select_attrs = {'class': 'form-select'}
     title = forms.CharField(label='Title', widget=forms.TextInput(common_attrs))
     preview = forms.CharField(
         widget=TinyMCE(mce_attrs={'height': 200}),
@@ -114,6 +115,7 @@ class ArticleForm(forms.Form):
         required=False,
         help_text='Hide article from public view')
     tags = forms.CharField(label='Tags', widget=forms.TextInput(common_attrs), required=False)
+    category = forms.ModelChoiceField(queryset=Category.objects, widget=forms.Select(form_select_attrs))
 
 
 class AvatarForm(forms.ModelForm):
