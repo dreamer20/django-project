@@ -5,6 +5,7 @@ from tinymce.widgets import TinyMCE
 from django_registration.forms import RegistrationForm
 from django.core.validators import EmailValidator
 from django.core.exceptions import ValidationError
+from taggit.forms import TagWidget, TagField
 from .models import User, Profile, Category
 
 
@@ -114,7 +115,7 @@ class ArticleForm(forms.Form):
         widget=forms.CheckboxInput({'class': 'form-check-input'}),
         required=False,
         help_text='Hide article from public view')
-    tags = forms.CharField(label='Tags', widget=forms.TextInput(common_attrs), required=False)
+    tags = TagField(label='Tags', widget=TagWidget(common_attrs), required=False)
     category = forms.ModelChoiceField(queryset=Category.objects, widget=forms.Select(form_select_attrs))
 
 

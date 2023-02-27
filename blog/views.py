@@ -222,7 +222,16 @@ class CreateArticleView(LoginRequiredMixin, TemplateView):
         form = self.form_class(request.POST)
 
         if form.is_valid():
-            request.user.article_set.create(**form.cleaned_data)
+            tags = form.cleaned_data['tags']
+            article = request.user.article_set.create(
+                title=form.cleaned_data['title'],
+                preview=form.cleaned_data['preview'],
+                content=form.cleaned_data['content'],
+                hidden=form.cleaned_data['hidden'],
+                category=form.cleaned_data['category'],
+            )
+            for tag in tags:
+                article.tags.add(tag)
             messages.info(self.request, 'Article created')
         return redirect(reverse('create_article'))
 
