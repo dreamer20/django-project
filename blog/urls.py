@@ -25,6 +25,7 @@ urlpatterns = [
     path('article/<int:id>/hide/', views.ArticleHideView.as_view(), name='hide_article'),
     path('article/<int:id>/comments/', views.CommentsView.as_view(), name='comments'),
     path('article/<int:id>/delete/', views.ArticleDeleteView.as_view(), name='delete'),
+    path('article/<int:id>/edit/', views.ArticleEditView.as_view(), name='edit_article'),
     path('search/', views.SearchView.as_view(), name='search'),
     path('<str:category>', views.CategoryView.as_view(), name='category'),
 ]

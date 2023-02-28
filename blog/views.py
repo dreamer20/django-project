@@ -236,6 +236,41 @@ class CreateArticleView(LoginRequiredMixin, TemplateView):
         return redirect(reverse('create_article'))
 
 
+class ArticleEditView(LoginRequiredMixin, TemplateView):
+    template_name = 'edit_article.html'
+    form_class = forms.ArticleForm
+
+    def get(self, request, *args, **kwargs):
+        article = request.user.article_set.get(pk=kwargs['id'])
+        form = self.form_class(initial={
+            'tags': ', '.join(article.tags.names()),
+            'title': article.title,
+            'preview': article.preview,
+            'content': article.content,
+            'hidden': article.hidden,
+            'category': article.category.id,
+        })
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request, *args, **kwargs):
+        form = self.form_class(request.POST)
+
+        if form.is_valid():
+            tags = form.cleaned_data['tags']
+            article = request.user.article_set.get(pk=kwargs['id'])
+            article.title = form.cleaned_data['title']
+            article.preview = form.cleaned_data['preview']
+            article.content = form.cleaned_data['content']
+            article.hidden = form.cleaned_data['hidden']
+            article.category = form.cleaned_data['category']
+            article.tags.clear()
+            for tag in tags:
+                article.tags.add(tag)
+            article.save()
+            messages.info(self.request, 'Changes was saved successfully')
+        return redirect(reverse('edit_article', kwargs={'id': article.id}))
+
+
 class UserArticleList(LoginRequiredMixin, ListView):
     template_name = 'accounts/article_list.html'
     context_object_name = 'article_list'

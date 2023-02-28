@@ -782,3 +782,65 @@ class ArticleDeleteViewTest(TestCase):
         articles = Article.objects.all()
         self.assertRedirects(response, reverse('profile'))
         self.assertEqual(len(articles), 1)
+
+
+class ArticleEditViewTest(TestCase):
+    existed_user = {
+        'username': 'existeduser',
+        'password': 'qwerty1234',
+        'email': 'test@mail.com'
+    }
+
+    @classmethod
+    def setUpTestData(self):
+        news = Category.objects.create(name='news')
+
+        user = User.objects.create_user(
+            username=self.existed_user['username'],
+            password=self.existed_user['password'],
+            email=self.existed_user['email']
+        )
+        self.article = user.article_set.create(
+            content='hello',
+            preview='hello',
+            title='Hello',
+            category=news,
+        )
+
+    def test_view_redirects_unauthorized_user_on_article_deletion(self):
+        delete_url = reverse('edit_article', kwargs={'id': self.article.id})
+        response = self.client.get(delete_url)
+        self.assertRedirects(response, reverse('login') + f'?next={delete_url}')
+
+    def test_view_url_accessible_by_name(self):
+        self.client.login(
+            username=self.existed_user['username'],
+            password=self.existed_user['password']
+        )
+        response = self.client.get(reverse('edit_article', kwargs={'id': self.article.id}))
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_uses_correct_template(self):
+        self.client.login(
+            username=self.existed_user['username'],
+            password=self.existed_user['password']
+        )
+        response = self.client.get(reverse('edit_article', kwargs={'id': self.article.id}))
+        self.assertTemplateUsed(response, 'edit_article.html')
+
+    def test_view_saves_edited_article(self):
+        self.client.login(
+            username=self.existed_user['username'],
+            password=self.existed_user['password']
+        )
+        delete_url = reverse('edit_article', kwargs={'id': self.article.id})
+        data = {
+            'content': 'hello world',
+            'preview': 'hello',
+            'title': 'Hello',
+            'category': '1',
+        }
+        response = self.client.post(delete_url, data)
+        self.assertRedirects(response, reverse('edit_article', kwargs={'id': self.article.id}))
+        article = Article.objects.get(pk=self.article.id)
+        self.assertEqual(article.content, 'hello world')

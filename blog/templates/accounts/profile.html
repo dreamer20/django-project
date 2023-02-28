@@ -89,7 +89,7 @@
                                                         </svg>
                                                     </a>
                                                     <ul class="dropdown-menu">
-                                                        <li><a class="dropdown-item" href="#">Edit</a></li>
+                                                        <li><a class="dropdown-item" href="{% url 'edit_article' id=article.id %}">Edit</a></li>
                                                         {% if article.hidden %}
                                                             <li><a class="dropdown-item" href="{% url 'show_article' id=article.id %}">Show</a></li>
                                                         {% else %}
