@@ -13,12 +13,13 @@
     {% include "navbar.html" %}
     {% if messages %}
         {% for message in messages %}
-            {% if message.level_tag == 'success' %}
+            {% if message.level_tag == 'info' %}
                 <div class="row justify-content-center mt-5">
-                    <div class="col-md-7 col-lg-5 col-xl-4">
-                        <div class="alert alert-success" role="alert">
+                    <div class="col-8">
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
                             {{ message }}
-                        </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>  
                     </div>
                 </div>
             {% endif %}
