@@ -9,6 +9,8 @@ services:
   entrypoint: ./start.sh
   environment:
     - initial=${initial}
+    - db_host=postgresdb
+    - db_name=postgres
   ports:
   - 8000:8000
   volumes:
