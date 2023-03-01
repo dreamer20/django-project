@@ -380,7 +380,7 @@ class CreateArticleViewTest(TestCase):
         messages = list(get_messages(response.wsgi_request))
         messages = [m.message for m in messages]
         user = User.objects.get(username=self.existed_user['username'])
-        self.assertEqual(len(user.article_set.all()), 1)
+        self.assertEqual(user.article_set.count(), 1)
         self.assertIn('Article created', messages)
 
 
@@ -638,7 +638,7 @@ class CommentsViewTest(TestCase):
             data)
         self.assertEqual(response.status_code, 200)
         article = Article.objects.get(pk=self.article1.id)
-        self.assertEqual(len(article.comment_set.all()), 3)
+        self.assertEqual(article.comment_set.count(), 3)
         comment = json.loads(response.json())
         self.assertEqual(comment[0]['fields']['comment'], 'some comment')
 
@@ -781,7 +781,7 @@ class ArticleDeleteViewTest(TestCase):
         response = self.client.get(delete_url)
         articles = Article.objects.all()
         self.assertRedirects(response, reverse('profile'))
-        self.assertEqual(len(articles), 1)
+        self.assertEqual(articles.count(), 1)
 
 
 class ArticleEditViewTest(TestCase):
