@@ -268,7 +268,8 @@ class ArticleEditView(LoginRequiredMixin, TemplateView):
                 article.tags.add(tag)
             article.save()
             messages.info(self.request, 'Changes was saved successfully')
-        return redirect(reverse('edit_article', kwargs={'id': article.id}))
+            return redirect(reverse('edit_article', kwargs={'id': article.id}))
+        return render(request, self.template_name, {'form': form})
 
 
 class UserArticleList(LoginRequiredMixin, ListView):

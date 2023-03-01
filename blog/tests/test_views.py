@@ -793,7 +793,7 @@ class ArticleEditViewTest(TestCase):
 
     @classmethod
     def setUpTestData(self):
-        news = Category.objects.create(name='news')
+        self.news = Category.objects.create(name='news')
 
         user = User.objects.create_user(
             username=self.existed_user['username'],
@@ -804,7 +804,7 @@ class ArticleEditViewTest(TestCase):
             content='hello',
             preview='hello',
             title='Hello',
-            category=news,
+            category=self.news,
         )
 
     def test_view_redirects_unauthorized_user_on_article_deletion(self):
@@ -838,7 +838,7 @@ class ArticleEditViewTest(TestCase):
             'content': 'hello world',
             'preview': 'hello',
             'title': 'Hello',
-            'category': '1',
+            'category': self.news.id,
         }
         response = self.client.post(delete_url, data)
         self.assertRedirects(response, reverse('edit_article', kwargs={'id': self.article.id}))
