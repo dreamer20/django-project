@@ -1,10 +1,7 @@
 {% extends 'accounts/profile.html' %}
 
 {% block profile_list %}
-    <a href="{% url 'profile' %}" class="list-group-item list-group-item-action">Articles</a>
-    <a href="{% url 'email_change' %}" class="list-group-item list-group-item-action">Email</a>
-    <a href="{% url 'password_change' %}" class="list-group-item list-group-item-action">Password change</a>
-    <a href="{% url 'avatar' %}" class="list-group-item list-group-item-action list-group-item-secondary">Avatar</a>
+    {% include "profile_menu.html" with active="avatar" %}
 {% endblock profile_list %}
 
 {% block profile_content %}

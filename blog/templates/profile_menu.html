@@ -1,0 +1,20 @@
+{% if active == 'profile' %}
+    <a href="{% url 'profile' %}" class="list-group-item list-group-item-action list-group-item-secondary">Articles</a>
+{% else %}
+    <a href="{% url 'profile' %}" class="list-group-item list-group-item-action">Articles</a>
+{% endif %}
+{% if active == 'email_change' %}
+    <a href="{% url 'email_change' %}" class="list-group-item list-group-item-action list-group-item-secondary">Email</a>
+{% else %}
+    <a href="{% url 'email_change' %}" class="list-group-item list-group-item-action">Email</a>
+{% endif %}
+{% if active == 'password_change' %}
+    <a href="{% url 'password_change' %}" class="list-group-item list-group-item-action list-group-item-secondary">Password change</a>
+{% else %}
+    <a href="{% url 'password_change' %}" class="list-group-item list-group-item-action">Password change</a>
+{% endif %}
+{% if active == 'avatar' %}
+    <a href="{% url 'avatar' %}" class="list-group-item list-group-item-action list-group-item-secondary">Avatar</a>
+{% else %}
+    <a href="{% url 'avatar' %}" class="list-group-item list-group-item-action">Avatar</a>
+{% endif %}
