@@ -9,4 +9,4 @@ if [ "$initial" = true ]; then
     done
     python3 manage.py loaddata data.json
 fi
-python3 manage.py runserver 0.0.0.0:8000
+gunicorn -b '0.0.0.0:8000' project.wsgi
