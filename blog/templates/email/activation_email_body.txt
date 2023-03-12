@@ -1,10 +1,10 @@
 <!doctype html>
 <html lang="en">
     <body>
-        Hello {{ user.username }}. To complete your registration click the link below:
+        Hello {{ user.username }}. To complete your registration click the link:
             
-        <a href="{{ scheme }}://{{ site }}{% url 'django_registration_activate' activation_key=activation_key %}">Activate account<a>
+        <a href="{{ scheme }}://{{ site }}{% url 'django_registration_activate' activation_key=activation_key %}">Activate account<a>.
         
-        If you did not associate your address with a account, please ignore this message and do not click on the link above.
+        If you did not associate your address with a account, please ignore this message and do not click on the activation link.
     </body>
 </html>
