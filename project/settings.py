@@ -136,7 +136,7 @@ MEDIA_URL = 'blog/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # STMP server settings
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_HOST_PASSWORD = 'lgevamdvvmwyeylv'
